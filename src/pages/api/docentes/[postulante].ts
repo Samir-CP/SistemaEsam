@@ -302,7 +302,31 @@ SELECT
             ELSE '[]'
         END,
         '[]'
-    ) AS cursos
+    ) AS cursos,
+       -- Archivos del docente
+    COALESCE(
+        CASE
+            WHEN COUNT(ad.id_ad) > 0 THEN
+                CONCAT(
+                    '[', 
+                    GROUP_CONCAT(
+                        DISTINCT CONCAT(
+                            '{',
+                              '"idArchivo":"', IFNULL(ad.id_ad, ''), '", ',
+                               '"fechaSubida":"', IFNULL(ad.createdAt, ''), '", ',
+                              '"nombreArchivo":"', IFNULL(ad.nombre_archivo, ''), '", ',
+                              '"rutaArchivo":"', IFNULL(ad.ruta_archivo, ''), '", ',
+                              '"idTipoArchivo":"', IFNULL(ad.idTipo_archivo, ''), '", ',
+                              '"tipoArchivo":"', IFNULL(ta.tipo, ''), '"',
+                            '}'
+                        ) SEPARATOR ','
+                    ), 
+                    ']'
+                )
+            ELSE '[]'
+        END,
+        '[]'
+    ) AS archivosDocente
 
 FROM 
     docentes d
@@ -333,6 +357,8 @@ FROM
     LEFT JOIN docente_curso dc ON d.idDocente = dc.idDocente
     LEFT JOIN cursos c ON dc.idCurso = c.idCurso
     LEFT JOIN paises p2 ON c.idPais = p2.idPais
+    LEFT JOIN archivos_docentes ad ON d.idDocente = ad.idDocente
+    LEFT JOIN tipo_archivo ta ON ad.idTipo_archivo = ta.id_ta
 WHERE 
     d.idDocente = ? AND ${estadoCondition}
 GROUP BY 
@@ -399,6 +425,11 @@ GROUP BY
       postulanteData.cursos = JSON.parse(postulanteData.cursos);
     } catch (e) {
       postulanteData.cursos = [];
+    }
+    try {
+      postulanteData.archivosDocente = JSON.parse(postulanteData.archivosDocente);
+    } catch (e) {
+      postulanteData.archivosDocente = [];
     }
 
     return new Response(JSON.stringify(postulanteData), { status: 200 });

@@ -49,10 +49,14 @@ const NotificacionesCampana = () => {
 
   const toggleLista = () => {
     if (mostrarLista && totalNotificaciones > 0) {
-      // Obtener los IDs de las notificaciones mostradas
-      const idsNotificaciones = notificaciones.map((notificacion) => notificacion.idNotificacion);
-      // Actualizar el estado de las notificaciones a "leída"
+      // Obtener los IDs de las notificaciones nuevas
+      const idsNotificaciones = notificaciones
+        .filter((notificacion) => notificacion.estado === "cerrado")
+        .map((notificacion) => notificacion.idNotificacion);
+
+      // Actualizar el estado de las notificaciones a "leído"
       actualizarNotificaciones(idsNotificaciones);
+
       // Actualizar el estado local para reflejar que las notificaciones han sido leídas
       setTotalNotificaciones(0);
     }
@@ -116,7 +120,7 @@ const NotificacionesCampana = () => {
                   display: "flex",
                   flexDirection: "column",
                   gap: "4px",
-                  backgroundColor: "white",
+                  backgroundColor: notificacion.estado === "cerrado" ? "#bbdefb" : "#f9f9f9", // Estilo diferente para nuevas y leídas
                   transition: "background-color 0.2s",
                   cursor: "pointer",
                 }}
@@ -124,7 +128,8 @@ const NotificacionesCampana = () => {
                   e.currentTarget.style.backgroundColor = "#f5f5f5";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "white";
+                  e.currentTarget.style.backgroundColor =
+                    notificacion.estado === "cerrado" ? "#bbdefb" : "#f9f9f9";
                 }}
               >
                 <div style={{ fontWeight: "500", color: "#333" }}>

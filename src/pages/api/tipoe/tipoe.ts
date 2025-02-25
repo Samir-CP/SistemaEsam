@@ -6,7 +6,7 @@ export async function GET(_: APIContext) {
     const db = await connectToDatabase();
 
     const query = `
-   SELECT idTipo, tipo FROM tiposestudios;
+   SELECT idTipoEstudio, tipo FROM tiposestudios;
     `;
 
     const [results] = await db.query(query);

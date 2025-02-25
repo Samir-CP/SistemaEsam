@@ -1,0 +1,120 @@
+.producciones-manager {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+.create-button {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-bottom: 15px;
+}
+
+.create-button:hover {
+  background-color: #45a049;
+}
+
+.producciones-list {
+  margin-top: 15px;
+}
+
+.produccion-item {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.produccion-item:hover {
+  transform: scale(1.02);
+  box-shadow: 4px 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.produccion-item h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 8px;
+}
+
+.produccion-item p {
+  font-size: 1rem;
+  color: #4b5563;
+  margin-bottom: 6px;
+}
+
+.produccion-item a {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.produccion-item a:hover {
+  text-decoration: underline;
+}
+
+.produccion-item button {
+  background-color: #2563eb;
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.produccion-item button:hover {
+  background-color: #1e40af;
+}
+
+
+.produccion-item h4 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  min-width: 300px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+}
+
+.modal-content button {
+  margin-right: 10px;
+  padding: 10px 15px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.modal-content button:hover {
+  opacity: 0.9;
+}

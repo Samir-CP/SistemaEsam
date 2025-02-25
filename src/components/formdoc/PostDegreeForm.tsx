@@ -17,7 +17,7 @@ interface EstudioSuperior {
   gradoTipo: string;
   idModalidad: number;
   modalidad: string;
-  idTipo: number;
+  idTipoEstudio: number;
   tipo: string;
 }
 
@@ -107,7 +107,7 @@ const FormularioDocente: React.FC = () => {
                 idPais: Number(selectedEstudio.idPais),
                 idGrado: Number(selectedEstudio.idGrado),
                 idModalidad: Number(selectedEstudio.idModalidad),
-                idTipo: Number(selectedEstudio.idTipo),
+                idTipoEstudio: Number(selectedEstudio.idTipoEstudio),
               },
             ],
           }),
@@ -151,7 +151,7 @@ const FormularioDocente: React.FC = () => {
               idPais: selectedEstudio.idPais,
               idGrado: selectedEstudio.idGrado,
               idModalidad: selectedEstudio.idModalidad,
-              idTipo: selectedEstudio.idTipo,
+              idTipoEstudio: selectedEstudio.idTipoEstudio,
             },
           }),
         });
@@ -185,7 +185,7 @@ const FormularioDocente: React.FC = () => {
       gradoTipo: "", // ID de grado inicial
       idModalidad: 0,
       modalidad: "", // ID de modalidad inicial
-      idTipo: 0,
+      idTipoEstudio: 0,
       tipo: "", // ID de tipo de estudios inicial
     };
 
@@ -364,7 +364,7 @@ const FormularioDocente: React.FC = () => {
               <TypesSelect
                 valueAndId="idTipo"
                 selectedTypes={{
-                  id: selectedEstudio?.idTipo || 0,
+                  id: selectedEstudio?.idTipoEstudio || 0,
                   name: selectedEstudio?.tipo || "",
                 }}
                 onTypesChange={(selectedType) => {

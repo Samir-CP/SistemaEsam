@@ -8,19 +8,25 @@ export async function GET({ request }: APIContext) {
     // Conectar a la base de datos
     db = await connectToDatabase();
 
-    // Obtener notificaciones con estado "cerrado"
+    // Obtener todas las notificaciones (nuevas y leídas)
     const queryNotificaciones = `
-     SELECT n.idNotificacion, d.nombres AS docente, c.titulo AS convocatoria, tn.descripcion AS tipo, n.fechaNotificacion
+      SELECT 
+        n.idNotificacion, 
+        d.nombres AS docente, 
+        c.titulo AS convocatoria, 
+        tn.descripcion AS tipo, 
+        n.fechaNotificacion,
+        n.estado
       FROM notificaciones n
       JOIN docentes d ON n.idDocente = d.idDocente
       JOIN convocatorias c ON n.idConvocatoria = c.idConvocatoria
       JOIN tipo_notificaciones tn ON n.idTipoNotificaciones = tn.idTipoNotificaciones
-      WHERE n.estado = 'cerrado'
+      ORDER BY n.fechaNotificacion DESC
     `;
 
     const [notificaciones] = await db.execute(queryNotificaciones);
 
-    // Obtener el conteo de notificaciones
+    // Obtener el conteo de notificaciones nuevas (estado "cerrado")
     const queryCount = `
       SELECT COUNT(*) AS total
       FROM notificaciones
