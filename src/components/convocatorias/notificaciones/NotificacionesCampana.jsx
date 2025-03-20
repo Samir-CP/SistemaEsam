@@ -1,22 +1,43 @@
 import React, { useState, useEffect } from "react";
 
+const mensajesNotificaciones = [
+  {
+    tipo: "postulacion",
+    mensaje: "<strong>{docente}</strong> se ha postulado a <strong>{convocatoria}</strong>.",
+  },
+  {
+    tipo: "aprobado",
+    mensaje: "<strong>{docente}</strong>, usted ha sido aprobado como docente.",
+  },
+  // Puedes agregar más tipos de notificaciones aquí
+];
+
 const NotificacionesCampana = () => {
   const [notificaciones, setNotificaciones] = useState([]);
   const [totalNotificaciones, setTotalNotificaciones] = useState(0);
   const [mostrarLista, setMostrarLista] = useState(false);
-  const idRol = localStorage.getItem("idRol");
 
-  // Si el idRol no es 2, no renderizar el componente
-  if (idRol !== "2") {
-    return null;
-  }
+  // Verificar si el código se ejecuta en el cliente
+  const isClient = typeof window !== "undefined";
+
+  // Obtener el idRol y idDocente solo en el cliente
+  const idRol = isClient ? localStorage.getItem("idRol") : null;
+  const idDocente = isClient ? localStorage.getItem("idDocente") : null;
 
   const fetchNotificaciones = async () => {
+    if (!idRol || (idRol === "4" && !idDocente)) return; // Validar que idRol y idDocente (si es necesario) estén disponibles
+
     try {
-      const response = await fetch("/api/convocatorias/notificaciones/select");
+      // Construir la URL con idDocente e idRol
+      const url = `/api/convocatorias/notificaciones/select?idDocente=${idDocente}&idRol=${idRol}`;
+      const response = await fetch(url);
       const data = await response.json();
+
+      // Actualizar el estado con las notificaciones recibidas
       setNotificaciones(data.notificaciones);
-      setTotalNotificaciones(data.totalNotificaciones);
+
+      // Actualizar el contador de notificaciones nuevas
+      setTotalNotificaciones(data.totalNotificaciones || 0);
     } catch (error) {
       console.error("Error al obtener notificaciones:", error);
     }
@@ -44,8 +65,10 @@ const NotificacionesCampana = () => {
   };
 
   useEffect(() => {
-    fetchNotificaciones();
-  }, []);
+    if (isClient) {
+      fetchNotificaciones();
+    }
+  }, [isClient]);
 
   const toggleLista = () => {
     if (mostrarLista && totalNotificaciones > 0) {
@@ -54,13 +77,35 @@ const NotificacionesCampana = () => {
         .filter((notificacion) => notificacion.estado === "cerrado")
         .map((notificacion) => notificacion.idNotificacion);
 
-      // Actualizar el estado de las notificaciones a "leído"
-      actualizarNotificaciones(idsNotificaciones);
+      // Solo actualizar si hay notificaciones nuevas
+      if (idsNotificaciones.length > 0) {
+        // Actualizar el estado de las notificaciones a "leído"
+        actualizarNotificaciones(idsNotificaciones);
 
-      // Actualizar el estado local para reflejar que las notificaciones han sido leídas
-      setTotalNotificaciones(0);
+        // Actualizar el estado local para reflejar que las notificaciones han sido leídas
+        setTotalNotificaciones(0);
+      }
     }
     setMostrarLista((prev) => !prev);
+  };
+
+  const obtenerMensajeNotificacion = (notificacion) => {
+    const mensajeObj = mensajesNotificaciones.find((msg) => msg.tipo === notificacion.tipo);
+    if (!mensajeObj) return "Notificación sin mensaje definido.";
+
+    // Reemplazar los placeholders con los valores reales
+    return mensajeObj.mensaje
+      .replace("{docente}", notificacion.docente)
+      .replace("{convocatoria}", notificacion.convocatoria || "una convocatoria"); // Manejar convocatoria null
+  };
+
+  const handleClickNotificacion = (link) => {
+    if (isClient && link) {
+      window.location.href = link; // Redirigir a la URL de la convocatoria
+    } else {
+      console.log("No hay enlace para esta notificación.");
+      // Opcional: Mostrar un mensaje al usuario o redirigir a una página predeterminada
+    }
   };
 
   return (
@@ -122,20 +167,27 @@ const NotificacionesCampana = () => {
                   gap: "4px",
                   backgroundColor: notificacion.estado === "cerrado" ? "#bbdefb" : "#f9f9f9", // Estilo diferente para nuevas y leídas
                   transition: "background-color 0.2s",
-                  cursor: "pointer",
+                  cursor: notificacion.link ? "pointer" : "default", // Cambiar el cursor si no hay enlace
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "#f5f5f5";
+                  if (notificacion.link) {
+                    e.currentTarget.style.backgroundColor = "#f5f5f5";
+                  }
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor =
-                    notificacion.estado === "cerrado" ? "#bbdefb" : "#f9f9f9";
+                  if (notificacion.link) {
+                    e.currentTarget.style.backgroundColor =
+                      notificacion.estado === "cerrado" ? "#bbdefb" : "#f9f9f9";
+                  }
                 }}
+                onClick={() => handleClickNotificacion(notificacion.link)} // Redirigir al hacer clic
               >
-                <div style={{ fontWeight: "500", color: "#333" }}>
-                  <strong>{notificacion.docente}</strong> se ha postulado a{" "}
-                  <strong>{notificacion.convocatoria}</strong>.
-                </div>
+                <div
+                  style={{ fontWeight: "500", color: "#333" }}
+                  dangerouslySetInnerHTML={{
+                    __html: obtenerMensajeNotificacion(notificacion),
+                  }}
+                />
                 <small style={{ color: "#666", fontSize: "12px" }}>
                   {new Date(notificacion.fechaNotificacion).toLocaleString()}
                 </small>

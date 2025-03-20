@@ -15,6 +15,16 @@ export async function PUT({ request }: APIContext) {
       );
     }
 
+    // Si no hay IDs, no hay nada que actualizar
+    if (idsNotificaciones.length === 0) {
+      return new Response(
+        JSON.stringify({
+          message: "No hay notificaciones para actualizar",
+        }),
+        { status: 200 }
+      );
+    }
+
     // Conectar a la base de datos
     const db = await connectToDatabase();
 

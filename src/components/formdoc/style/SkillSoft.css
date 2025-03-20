@@ -1,5 +1,5 @@
-/* Habilidad Card */
-.habilidad-card {
+/* Skill Card */
+.skill-soft-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -12,18 +12,18 @@
   transition: box-shadow 0.3s ease;
 }
 
-.habilidad-card:hover {
+.skill-soft-card:hover {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-.habilidad-card p {
+.skill-soft-card p {
   margin: 0;
   font-size: 16px;
   font-weight: 500;
 }
 
 /* Botones */
-.edit-btn, .add-btn {
+.skill-soft-edit-btn, .skill-soft-add-btn {
   background-color: #007bff;
   color: #fff;
   border: none;
@@ -34,16 +34,16 @@
   transition: background-color 0.3s ease;
 }
 
-.edit-btn:hover, .add-btn:hover {
+.skill-soft-edit-btn:hover, .skill-soft-add-btn:hover {
   background-color: #0056b3;
 }
 
-.add-btn {
+.skill-soft-add-btn {
   margin: 20px 0;
 }
 
 /* Modal */
-.modal {
+.modal-skill {
   position: fixed;
   top: 0;
   left: 0;
@@ -55,7 +55,7 @@
   align-items: center;
 }
 
-.modal-content {
+.modal-skill-content {
   background: #fff;
   padding: 20px 30px;
   border-radius: 10px;
@@ -63,29 +63,61 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-.modal-actions {
+.modal-skill-actions {
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
 }
 
-.modal-actions button {
+.modal-skill-actions button {
   padding: 8px 12px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
 }
 
-.modal-actions button[type="submit"] {
+.modal-skill-actions button[type="submit"] {
   background: #007bff;
   color: white;
 }
 
-.modal-actions button[type="button"] {
-  background: #ddd;
-  color: black;
+.modal-skill-actions button[type="button"] {
+  background: #dc3545;
+  color: white;
 }
 
-.modal-actions button:hover {
-  opacity: 0.9;
+.modal-skill-actions button:hover {
+  opacity: 0.9
+}
+.add-more-button {
+  background-color: #28a745; /* Verde */
+  color: white;
+  border: none;
+  padding: 10px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 12px;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.add-more-button:hover {
+  background-color: #218838; /* Verde más oscuro al pasar el mouse */
+}
+
+/* Estilos para el botón "Eliminar" */
+.delete-button {
+  background-color: #dc3545; /* Rojo */
+  color: white;
+  border: none;
+  padding: 10px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 12px;
+  margin-left: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.delete-button:hover {
+  background-color: #c82333; /* Rojo más oscuro al pasar el mouse */
 }

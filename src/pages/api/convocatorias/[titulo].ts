@@ -24,7 +24,9 @@ export async function GET({ params }: APIContext) {
         c.requisitos, 
         c.fechaInicio, 
         c.fechaFinal, 
-        c.estado, 
+        c.estado,
+        c.imagenPortada,
+        c.formularioExterno,
         COALESCE(
           CASE
             WHEN COUNT(d.idDocente) > 0 THEN

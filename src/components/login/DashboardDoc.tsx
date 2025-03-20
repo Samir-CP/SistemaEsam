@@ -27,8 +27,11 @@ export const DashboardDoc: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewURL, setPreviewURL] = useState<string | null>(null);
 
-  const formatDate = (date: string) => {
-    const [day, month, year] = date.split("/");
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   };
 
@@ -60,7 +63,7 @@ export const DashboardDoc: React.FC = () => {
       formData.append("genero", newInfo.genero || "");
       formData.append("direccion", newInfo.direccion || "");
       formData.append("estado", newInfo.estado || "");
-
+  
       // Si se seleccionó una nueva imagen, se adjunta
       if (selectedFile) {
         formData.append("fotografia", selectedFile);
@@ -68,19 +71,31 @@ export const DashboardDoc: React.FC = () => {
         // Si no se seleccionó una nueva imagen, enviamos la URL de la imagen actual
         formData.append("fotografia", docenteData.fotografia);
       }
-
+      console.log("Contenido de FormData:");
+      for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+      }
       const response = await fetch("/api/update_postulante", {
         method: "POST",
         body: formData,
       });
-
+  
+      // Verificar si la respuesta es JSON válido
+      const responseText = await response.text();
+      let responseData;
+      try {
+        responseData = JSON.parse(responseText);
+      } catch (error) {
+        console.error("La respuesta no es un JSON válido:", responseText);
+        alert("Error en el servidor: La respuesta no es un JSON válido");
+        return;
+      }
+  
       if (response.ok) {
-        const updatedData = await response.json();
-        console.log("Datos actualizados:", updatedData);
+        console.log("Datos actualizados:", responseData);
         alert("Datos actualizados con éxito");
       } else {
-        const errorData = await response.json();
-        console.error("Error del servidor:", errorData);
+        console.error("Error del servidor:", responseData);
         alert("Hubo un error al actualizar los datos");
       }
     } catch (error) {

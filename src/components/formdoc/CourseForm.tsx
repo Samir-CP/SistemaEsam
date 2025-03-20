@@ -11,12 +11,12 @@ interface Experiencia {
 
 interface ExperienciaDocente {
   idDocente: number;
-  experienciasDocente: Experiencia[];
+  experienciasDocente: (Experiencia | null)[];
 }
 
 const ExperienciaDocenteManager: React.FC = () => {
   const [idDocente, setIdDocente] = useState<number | null>(null);
-  const [experienciasDocente, setExperienciasDocente] = useState<Experiencia[]>([]); // Inicializamos como un array vacío
+  const [experienciasDocente, setExperienciasDocente] = useState<(Experiencia | null)[]>([]);
   const [loading, setLoading] = useState(false);
   const [newExperiencia, setNewExperiencia] = useState<Experiencia>({
     idExperiencia: 0,
@@ -183,21 +183,24 @@ const ExperienciaDocenteManager: React.FC = () => {
       {loading && <p className="experiencia-docente-loading">Cargando...</p>}
   
       <h2 className="experiencia-docente-subtitle">Experiencias actuales</h2>
-      {experienciasDocente.length > 0 ? (
+      {experienciasDocente.filter(exp => exp !== null).length > 0 ? (
         <ul className="experiencia-docente-list">
-          {experienciasDocente.map((exp) => (
-            <li key={exp.idExperiencia} className="experiencia-docente-item">
-              <strong>Materia:</strong> {exp.materia}, <strong>Calidad:</strong> {exp.calidad},{" "}
-              <strong>Universidad:</strong> {exp.universidad}, <strong>Concluido el:</strong>{" "}
-              {new Date(exp.concluidoEl).toLocaleDateString()}{" "}
-              <button
-                className="experiencia-docente-button editar-button"
-                onClick={() => handleOpenModal(exp)}
-              >
-                Editar
-              </button>
-            </li>
-          ))}
+          {experienciasDocente
+            .filter(exp => exp !== null)
+            .map((exp, index) => (
+              // Como ya filtramos, 'exp' ya es no nulo
+              <li key={exp!.idExperiencia} className="experiencia-docente-item">
+                <strong>Materia:</strong> {exp!.materia}, <strong>Calidad:</strong> {exp!.calidad},{" "}
+                <strong>Universidad:</strong> {exp!.universidad}, <strong>Concluido el:</strong>{" "}
+                {new Date(exp!.concluidoEl).toLocaleDateString()}{" "}
+                <button
+                  className="experiencia-docente-button editar-button"
+                  onClick={() => handleOpenModal(exp!)}
+                >
+                  Editar
+                </button>
+              </li>
+            ))}
         </ul>
       ) : (
         <p className="experiencia-docente-empty">No hay experiencias docentes registradas.</p>
@@ -211,9 +214,9 @@ const ExperienciaDocenteManager: React.FC = () => {
       </button>
   
       {isModalOpen && (
-        <div className="modal">
-          <div className="modal-content">
-            <h2 className="modal-title">
+        <div className="modal-curse">
+          <div className="modal-content-curse">
+            <h2 className="modal-title-curse">
               {isEditModal ? "Editar experiencia docente" : "Agregar nueva experiencia docente"}
             </h2>
             <form
@@ -299,7 +302,6 @@ const ExperienciaDocenteManager: React.FC = () => {
       )}
     </div>
   );
-  
 };
 
 export default ExperienciaDocenteManager;

@@ -90,3 +90,57 @@
 .cancelar-button:hover {
   opacity: 0.9;
 }
+
+
+
+/* Modal styles */
+.modal-curse {
+  
+  display: flex;
+  position: fixed;
+  flex-direction: column; 
+  overflow: hidden;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  width: 100%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modal-content-curse {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 500px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal-content-curse h4 {
+  margin-bottom: 15px;
+  font-size: 1.25rem;
+  text-align: center;
+}
+
+.modal-content-curse div {
+  margin-bottom: 10px;
+}
+
+.modal-content-curse label {
+  display: block;
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+}
+
+.modal-title-curse{
+ 
+  padding: 0%;
+  width: 100%;
+}

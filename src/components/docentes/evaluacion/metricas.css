@@ -1,0 +1,103 @@
+/* metricas.css */
+.metricas-container {
+    max-width: 600px; /* Ancho máximo del contenido */
+    width: 100%; /* Ancho relativo */
+    margin: 0 auto; /* Centrar el contenido */
+    max-height: 70vh; /* Altura máxima del contenedor */
+    overflow-y: auto; /* Agregar scroll vertical */
+    padding: 10px; /* Espaciado interno */
+  }
+  
+  .metricas-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  /* Estilos para los criterios y radio buttons */
+  .criterio-container {
+    margin-bottom: 20px;
+  }
+  
+  .criterio-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .radio-group {
+    display: flex;
+    gap: 10px; /* Espacio entre los radio buttons */
+    flex-wrap: wrap; /* Asegura que los radio buttons no se salgan del contenedor */
+  }
+  
+  .radio-group label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+  }
+  
+  /* Estilos para los botones de tipo de evaluación */
+  .tipo-evaluacion-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .tipo-evaluacion-group label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+  }
+  
+  /* Estilos para los criterios adicionales (Cumple/No Cumple) */
+  .criterio-adicional-container {
+    margin-bottom: 20px;
+  }
+  
+  .criterio-adicional-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .criterio-adicional-group {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .criterio-adicional-group label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+  }
+  /* Estilos para los textarea */
+.textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    resize: vertical; /* Permite redimensionar verticalmente */
+  }
+  
+  /* Estilos para el botón de guardar */
+  .guardar-button {
+    background-color: #28a745; /* Verde */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+    width: 100%;
+  }
+  
+  .guardar-button:hover {
+    background-color: #218838; /* Verde más oscuro al hacer hover */
+  }

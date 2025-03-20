@@ -17,7 +17,7 @@ interface EstudioSuperior {
   gradoTipo: string;
   idModalidad: number;
   modalidad: string;
-  idTipoEstudio: number;
+  idTipo: number;
   tipo: string;
 }
 
@@ -26,7 +26,7 @@ interface DocenteData {
   estudiosuperiores: EstudioSuperior[];
 }
 
-const FormularioDocente: React.FC = () => {
+const PostDegreeForm: React.FC = () => {
   const [docenteData, setDocenteData] = useState<DocenteData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [message, setMessage] = useState<string>("");
@@ -107,7 +107,7 @@ const FormularioDocente: React.FC = () => {
                 idPais: Number(selectedEstudio.idPais),
                 idGrado: Number(selectedEstudio.idGrado),
                 idModalidad: Number(selectedEstudio.idModalidad),
-                idTipoEstudio: Number(selectedEstudio.idTipoEstudio),
+                idTipo: Number(selectedEstudio.idTipo),
               },
             ],
           }),
@@ -151,7 +151,7 @@ const FormularioDocente: React.FC = () => {
               idPais: selectedEstudio.idPais,
               idGrado: selectedEstudio.idGrado,
               idModalidad: selectedEstudio.idModalidad,
-              idTipoEstudio: selectedEstudio.idTipoEstudio,
+              idTipo: selectedEstudio.idTipo,
             },
           }),
         });
@@ -185,7 +185,7 @@ const FormularioDocente: React.FC = () => {
       gradoTipo: "", // ID de grado inicial
       idModalidad: 0,
       modalidad: "", // ID de modalidad inicial
-      idTipoEstudio: 0,
+      idTipo: 0,
       tipo: "", // ID de tipo de estudios inicial
     };
 
@@ -253,7 +253,7 @@ const FormularioDocente: React.FC = () => {
       {message && <p className="message-text">{message}</p>}
 
       {selectedEstudio && (
-        <div className="modal">
+        <div className="modal-post">
           <div className="modal-content">
             <div className="modal-title">
               <h4>Editar Estudio</h4>
@@ -364,7 +364,7 @@ const FormularioDocente: React.FC = () => {
               <TypesSelect
                 valueAndId="idTipo"
                 selectedTypes={{
-                  id: selectedEstudio?.idTipoEstudio || 0,
+                  id: selectedEstudio?.idTipo || 0,
                   name: selectedEstudio?.tipo || "",
                 }}
                 onTypesChange={(selectedType) => {
@@ -396,4 +396,4 @@ const FormularioDocente: React.FC = () => {
   );
 };
 
-export default FormularioDocente;
+export default PostDegreeForm;

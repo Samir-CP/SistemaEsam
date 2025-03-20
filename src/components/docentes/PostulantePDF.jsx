@@ -209,7 +209,7 @@ const PDFContent = ({ postulante }) => (
                   <Text style={styles.rightColumnText}>Enlace de editorial: {publicacionesI.enlaceEditorial}</Text>
                   <Text style={styles.rightColumnText}>Pais: {publicacionesI.pais}</Text>
                   <Text style={styles.rightColumnText}>Fecha: {publicacionesI.fecha}</Text>
-                  <Text style={styles.rightColumnText}>Tipo: {publicacionesI.tipoPublicacion}</Text>
+                  <Text style={styles.rightColumnText}>Tipo: {publicacionesI.tipo}</Text>
                 </View>
               ))}
             </View>

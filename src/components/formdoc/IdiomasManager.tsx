@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import './style/IdiomasManager.css';
+import React, { useState, useEffect } from "react";
+import "./style/IdiomasManager.css";
 import IdiomasSelect from "../perfil-doc/IdiomasSelect";
 
 interface Idioma {
@@ -198,7 +198,6 @@ const IdiomasManager: React.FC = () => {
       <button onClick={openAddModal} className="button add-button">
         Agregar Idioma
       </button>
-
       {/* Lista de idiomas, filtrando posibles elementos nulos */}
       <div className="idiomas-list">
         {docenteData?.idiomas
@@ -232,94 +231,106 @@ const IdiomasManager: React.FC = () => {
             </div>
           ))}
       </div>
-
       {/* Modal de Agregar Idioma */}
       {showAddModal && (
-  <div className="modalidioma-add-overlay">
-    <div className="modalidioma-add">
-      <h2>Agregar Nuevo Idioma</h2>
-      <IdiomasSelect
-        selectedIdioma={{
-          id: parseInt(newIdioma.idIdioma || "0"),
-          name: newIdioma.idioma,
-        }}
-        onIdiomaChange={(selected) =>
-          setNewIdioma({
-            ...newIdioma,
-            idIdioma: selected.id.toString(),
-            idioma: selected.name,
-          })
-        }
-        valueAndId="idIdioma"
-        selected={newIdioma.idioma}
-        selectedId={parseInt(newIdioma.idIdioma || "0")}
-      />
-      {/* Checkboxes para los niveles */}
-      {["escritura", "oral", "lectura", "escucha"].map((field) => (
-        <div key={field} className="modalidioma-add-checkbox-group">
-          <label>
-            {field.charAt(0).toUpperCase() + field.slice(1)}
-          </label>
-          {["Alto", "Medio", "Bajo"].map((level, index) => (
-            <div key={index}>
-              <input
-                type="radio"
-                name={field}
-                value={3 - index}
-                checked={newIdioma[field as keyof Idioma] === 3 - index}
-                onChange={handleNewIdiomaChange}
-              />
-              <label>{level}</label>
-            </div>
-          ))}
+        <div className="modalidioma-add-overlay">
+          <div className="modalidioma-add">
+            <h2>Agregar Nuevo Idioma</h2>
+            <IdiomasSelect
+              selectedIdioma={{
+                id: parseInt(newIdioma.idIdioma || "0"),
+                name: newIdioma.idioma,
+              }}
+              onIdiomaChange={(selected) =>
+                setNewIdioma({
+                  ...newIdioma,
+                  idIdioma: selected.id.toString(),
+                  idioma: selected.name,
+                })
+              }
+              valueAndId="idIdioma"
+              selected={newIdioma.idioma}
+              selectedId={parseInt(newIdioma.idIdioma || "0")}
+            />
+            {/* Checkboxes para los niveles */}
+            {["escritura", "oral", "lectura", "escucha"].map((field) => (
+              <div key={field} className="modalidioma-add-checkbox-group">
+                <label>{field.charAt(0).toUpperCase() + field.slice(1)}</label>
+                {["Alto", "Medio", "Bajo"].map((level, index) => (
+                  <div key={index}>
+                    <input
+                      type="radio"
+                      name={field}
+                      value={3 - index}
+                      checked={newIdioma[field as keyof Idioma] === 3 - index}
+                      onChange={handleNewIdiomaChange}
+                    />
+                    <label>{level}</label>
+                  </div>
+                ))}
+              </div>
+            ))}
+            <button
+              className="modalidioma-add-button"
+              onClick={handleAddIdioma}
+            >
+              Agregar
+            </button>
+            <button
+              className="modalidioma-add-button-close"
+              onClick={closeAddModal}
+            >
+              Cerrar
+            </button>
+          </div>
         </div>
-      ))}
-      <button className="modalidioma-add-button" onClick={handleAddIdioma}>Agregar</button>
-      <button className="modalidioma-add-button-close" onClick={closeAddModal}>Cerrar</button>
-    </div>
-  </div>
-)}
-
-
+      )}
       {/* Modal de Editar Idioma */}
-      {showEditModal && selectedIdioma && (
-  <div className="modalidioma-overlay">
-    <div className="modalidioma">
-      <h2>Editar Idioma</h2>
-      <input
-        type="text"
-        name="idIdioma"
-        placeholder="ID Idioma"
-        value={selectedIdioma.idIdioma}
-        onChange={handleEditIdiomaChange}
-        disabled
-      />
-      {/* Checkboxes para los niveles */}
-      {["escritura", "oral", "lectura", "escucha"].map((field) => (
-        <div key={field} className="modalidioma-checkbox-group">
-          <label>
-            {field.charAt(0).toUpperCase() + field.slice(1)}
-          </label>
-          {["Alto", "Medio", "Bajo"].map((level, index) => (
-            <div key={index}>
-              <input
-                type="radio"
-                name={field}
-                value={3 - index}
-                checked={selectedIdioma[field as keyof Idioma] === 3 - index}
-                onChange={handleEditIdiomaChange}
-              />
-              <label>{level}</label>
-            </div>
-          ))}
-        </div>
-      ))}
-      <button className="modalidioma-button" onClick={handleUpdateIdioma}>Actualizar</button>
-      <button className="modalidioma-button-close" onClick={closeEditModal}>Cerrar</button>
-    </div>
-  </div>
-)}
 
+      {showEditModal && selectedIdioma && (
+        <div className="modalidioma-add-overlay">
+          <div className="modalidioma-add">
+            <h2>Editar Idioma</h2>
+            <input
+              type="text"
+              name="idioma"
+              placeholder="Idioma"
+              value={selectedIdioma.idioma}
+              onChange={handleEditIdiomaChange}
+              disabled
+            />
+            {/* Checkboxes para los niveles */}
+            {["escritura", "oral", "lectura", "escucha"].map((field) => (
+              <div key={field} className="modalidioma-add-checkbox-group">
+                <label>{field.charAt(0).toUpperCase() + field.slice(1)}</label>
+                {["Alto", "Medio", "Bajo"].map((level, index) => (
+                  <div key={index}>
+                    <input
+                      type="radio"
+                      name={field}
+                      value={3 - index}
+                      checked={
+                        selectedIdioma[field as keyof Idioma] === 3 - index
+                      }
+                      onChange={handleEditIdiomaChange}
+                    />
+                    <label>{level}</label>
+                  </div>
+                ))}
+              </div>
+            ))}
+            <button className="modalidioma-add-button" onClick={handleUpdateIdioma}>
+              Actualizar
+            </button>
+            <button
+              className="modalidioma-add-button-close"
+              onClick={closeEditModal}
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

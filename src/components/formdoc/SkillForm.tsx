@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../formdoc/style/SkillSoft.css"; // Archivo CSS para estilos
 
-interface HabilidadBlanda {
+interface HabilidadBlanda { 
   idHabilidadBlanda: number;
   habilidad: string;
 }
@@ -117,100 +117,102 @@ const HabilidadesBlandasManager: React.FC = () => {
   };
 
   return (
-    <div className="habilidades-manager">
-      <h1>Gestión de Habilidades Blandas</h1>
-
-      {loading ? (
-        <p>Cargando...</p>
-      ) : (
-        <div className="habilidades-container">
-          {habilidadesBlandas.map((habilidad) => (
-            <div className="habilidad-card" key={habilidad.idHabilidadBlanda}>
-              <p>{habilidad.habilidad}</p>
-              <button className="edit-btn" onClick={() => handleEdit(habilidad)}>
-                Editar
+    <div className="skills-soft-manager">
+    <h1>Gestión de Habilidades Blandas</h1>
+  
+    {loading ? (
+      <p>Cargando...</p>
+    ) : (
+      <div className="skills-soft-container">
+        {habilidadesBlandas.map((habilidad) => (
+          <div className="skill-soft-card" key={habilidad.idHabilidadBlanda}>
+            <p>{habilidad.habilidad}</p>
+            <button className="skill-soft-edit-btn" onClick={() => handleEdit(habilidad)}>
+              Editar
+            </button>
+          </div>
+        ))}
+      </div>
+    )}
+  
+    <button className="skill-soft-add-btn" onClick={() => setModalType("add")}>
+      Agregar Habilidades
+    </button>
+  
+    {/* Modal para editar */}
+    {modalType === "edit" && editingHabilidad && (
+      <div className="modal-skill">
+        <div className="modal-skill-content">
+          <h2>Editar Habilidad</h2>
+          <form onSubmit={handleUpdate}>
+            <label>
+              Habilidad:
+              <input
+                type="text"
+                value={editingHabilidad.habilidad}
+                onChange={(e) =>
+                  setEditingHabilidad({ ...editingHabilidad, habilidad: e.target.value })
+                }
+              />
+            </label>
+            <div className="modal-skill-actions">
+              <button type="submit">Guardar</button>
+              <button type="button" onClick={() => setModalType(null)}>
+                Cancelar
               </button>
             </div>
-          ))}
+          </form>
         </div>
-      )}
-
-      <button className="add-btn" onClick={() => setModalType("add")}>
-        Agregar Habilidades
-      </button>
-
-      {/* Modal para editar */}
-      {modalType === "edit" && editingHabilidad && (
-        <div className="modal">
-          <div className="modal-content">
-            <h2>Editar Habilidad</h2>
-            <form onSubmit={handleUpdate}>
-              <label>
-                Habilidad:
+      </div>
+    )}
+  
+    {/* Modal para agregar */}
+    {modalType === "add" && (
+      <div className="modal-skill">
+        <div className="modal-skill-content">
+          <h2>Agregar Habilidades</h2>
+          <form onSubmit={handleAddNewHabilidad}>
+            {newHabilidades.map((habilidad, index) => (
+              <div key={index} className="new-skill-soft-input">
                 <input
                   type="text"
-                  value={editingHabilidad.habilidad}
-                  onChange={(e) =>
-                    setEditingHabilidad({ ...editingHabilidad, habilidad: e.target.value })
-                  }
+                  value={habilidad}
+                  onChange={(e) => {
+                    const updatedHabilidades = [...newHabilidades];
+                    updatedHabilidades[index] = e.target.value;
+                    setNewHabilidades(updatedHabilidades);
+                  }}
                 />
-              </label>
-              <div className="modal-actions">
-                <button type="submit">Guardar</button>
-                <button type="button" onClick={() => setModalType(null)}>
-                  Cancelar
+                <button
+                  type="button"
+                   className="delete-button"
+                  onClick={() => {
+                    const updatedHabilidades = newHabilidades.filter((_, i) => i !== index);
+                    setNewHabilidades(updatedHabilidades);
+                  }}
+                >
+                  Eliminar
                 </button>
               </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Modal para agregar */}
-      {modalType === "add" && (
-        <div className="modal">
-          <div className="modal-content">
-            <h2>Agregar Habilidades</h2>
-            <form onSubmit={handleAddNewHabilidad}>
-              {newHabilidades.map((habilidad, index) => (
-                <div key={index} className="new-habilidad">
-                  <input
-                    type="text"
-                    value={habilidad}
-                    onChange={(e) => {
-                      const updatedHabilidades = [...newHabilidades];
-                      updatedHabilidades[index] = e.target.value;
-                      setNewHabilidades(updatedHabilidades);
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const updatedHabilidades = newHabilidades.filter((_, i) => i !== index);
-                      setNewHabilidades(updatedHabilidades);
-                    }}
-                  >
-                    Eliminar
-                  </button>
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => setNewHabilidades([...newHabilidades, ""])}
-              >
-                Agregar Más
+            ))}
+            <button
+              type="button"
+              className="add-more-button"
+              onClick={() => setNewHabilidades([...newHabilidades, ""])}
+            >
+              Agregar Más
+            </button>
+            <div className="modal-skill-actions">
+              <button type="submit">Guardar</button>
+              <button type="button" onClick={() => setModalType(null)}>
+                Cancelar
               </button>
-              <div className="modal-actions">
-                <button type="submit">Guardar</button>
-                <button type="button" onClick={() => setModalType(null)}>
-                  Cancelar
-                </button>
-              </div>
-            </form>
-          </div>
+            </div>
+          </form>
         </div>
-      )}
-    </div>
+      </div>
+    )}
+  </div>
   );
 };
 

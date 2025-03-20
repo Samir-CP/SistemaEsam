@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import jwt_decode from "jwt-decode";
 import "./headerDash.css"; 
-
+import NotificacionesCampana from "../../components/convocatorias/notificaciones/NotificacionesCampana";
 
 interface DecodedToken {
   idDocente: string;
   nombre: string;
   apellidoPaterno: string;
-  idRol:string;
+  idRol: string;
 }
 
 export const HeaderDash: React.FC = () => {
@@ -27,7 +27,7 @@ export const HeaderDash: React.FC = () => {
     try {
       // Decodificar el token para obtener los datos del usuario
       const decodedToken = jwt_decode<DecodedToken>(token);
-      const { idDocente, nombre, apellidoPaterno,idRol } = decodedToken;
+      const { idDocente, nombre, apellidoPaterno, idRol } = decodedToken;
 
       // Almacenar los datos en el localStorage para otros componentes
       localStorage.setItem("idDocente", idDocente);
@@ -56,22 +56,20 @@ export const HeaderDash: React.FC = () => {
 
   return (
     <> 
-    <header>
-    <a id="logoEsam" href="/dashboardDoc"> </a>
-    <h1 id="titulo-head" >Docente Plataforma</h1>
-    
-    <a id="logoEsamMobile" href="/dashboardDoc">
-      <h1 id="tituloMobile">Docente Plataforma</h1>
-    </a>
+      <header>
+        <a id="logoEsam" href="/dashboardDoc"></a>
+        <h1 id="titulo-head">Docente Plataforma</h1>
 
-    <button className="logout-button" onClick={handleLogout}>
-        Cerrar Sesión
-      </button>
-  </header>
-  <div className="barraAmarilla"></div>
-     </>
-  
-  )
-}
+        <div className="header-right">
+          <NotificacionesCampana />
+          <button className="logout-button" onClick={handleLogout}>
+            Cerrar Sesión
+          </button>
+        </div>
+      </header>
+      <div className="barraAmarilla"></div>
+    </>
+  );
+};
 
-export default HeaderDash
+export default HeaderDash;

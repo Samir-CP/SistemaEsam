@@ -139,7 +139,31 @@
   transform: translateY(-3px); /* Efecto de levantamiento */
   box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3);
 }
+/* Estilo para el botón "Ver Métricas" */
+.metricas-button {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Ícono alineado a la izquierda */
+  background-color: #3498db; /* Azul para el botón de métricas */
+  color: white;
+  border: none;
+  border-radius: 25px; /* Botón redondeado */
+  padding: 5px 15px; /* Espaciado interno más pequeño */
+  cursor: pointer;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2); /* Sombra para efecto 3D */
+  position: relative; /* Para posicionar el círculo */
+  overflow: visible; /* Permite que el círculo sobresalga del botón */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  min-width: 120px; /* Ancho mínimo del botón */
+  height: 40px; /* Altura del botón */
+  margin-left: 10px; /* Espacio entre botones */
+}
 
+/* Hover en el botón "Ver Métricas" */
+.metricas-button:hover {
+  transform: translateY(-3px); /* Efecto de levantamiento */
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3);
+}
 /* Ícono dentro de los botones */
 .icon-circle {
   display: flex;

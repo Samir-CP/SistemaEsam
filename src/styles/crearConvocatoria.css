@@ -1,100 +1,108 @@
+/* Contenedor principal del formulario */
+.create-form {
+  max-height: 80vh; /* Altura máxima del formulario */
+  overflow-y: auto; /* Habilitar scroll vertical */
+  padding-right: 10px; /* Espacio para evitar que el scroll tape el contenido */
+}
 
-  .form-group {
-    margin-bottom: 15px;
-    margin-left: 15px;
-  }
-  
-  .form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-    color: #333;
-  }
-  
-  .form-group input,
-  .form-group textarea,
-  .form-group select {
-    width: 80%;
-    padding: 10px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    transition: border-color 0.3s ease-in-out;
-  }
-  
-  .form-group input:focus,
-  .form-group textarea:focus,
-  .form-group select:focus {
-    border-color: #007bff;
-    outline: none;
-  }
-  
-  textarea {
-    resize: none;
-  }
-  
-  .submit-button {
-    margin-top: 15px;
-    margin-left: 15px;
-    width: 82%;
-    padding: 12px;
-    background-color: #007bff;
-    color: white;
-    font-size: 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
-  }
-  
-  .submit-button:hover {
-    background-color: #0056b3;
-  }
-  
-  .radio-group {
-    display: flex;
-    gap: 20px;
-    margin: 10px 15px;
-  }
-  
-  .radio-group label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    color: #333;
-  }
-  
-  .radio-group input[type="radio"] {
-    appearance: none;
-    width: 18px;
-    height: 18px;
-    border: 2px solid #007bff;
-    border-radius: 50%;
-    position: relative;
-    transition: 0.3s all ease-in-out;
-  }
-  
-  .radio-group input[type="radio"]:checked {
-    background-color: #007bff;
-    border: 2px solid #0056b3;
-  }
-  
-  .radio-group input[type="radio"]::before {
-    content: "";
-    width: 10px;
-    height: 10px;
-    background-color: white;
-    border-radius: 50%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0);
-    transition: 0.2s ease-in-out;
-  }
-  
-  .radio-group input[type="radio"]:checked::before {
-    transform: translate(-50%, -50%) scale(1);
-  }
-  
+/* Estilos para los grupos de formulario */
+.form-group {
+  margin-bottom: 15px;
+  margin-left: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #333;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 80%;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: border-color 0.3s ease-in-out;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+textarea {
+  resize: none;
+}
+
+/* Estilos para el botón de enviar */
+.submit-button {
+  margin-top: 15px;
+  margin-left: 15px;
+  width: 82%;
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.submit-button:hover {
+  background-color: #0056b3;
+}
+
+/* Estilos para el grupo de radio buttons */
+.radio-group {
+  display: flex;
+  gap: 20px;
+  margin: 10px 15px;
+}
+
+.radio-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #333;
+}
+
+.radio-group input[type="radio"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #007bff;
+  border-radius: 50%;
+  position: relative;
+  transition: 0.3s all ease-in-out;
+}
+
+.radio-group input[type="radio"]:checked {
+  background-color: #007bff;
+  border: 2px solid #0056b3;
+}
+
+.radio-group input[type="radio"]::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  background-color: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  transition: 0.2s ease-in-out;
+}
+
+.radio-group input[type="radio"]:checked::before {
+  transform: translate(-50%, -50%) scale(1);
+}

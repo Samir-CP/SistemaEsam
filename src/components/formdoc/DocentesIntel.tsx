@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import './style/ProduccionesIntelectualesManager.css'; // Importa tus estilos personalizados
 import CountrySelect from "../perfil-doc/CountrySelect";
-
+import { TipoPublic } from '../perfil-doc/TipoPublic';
 // Interfaces
 interface ProduccionIntelectual {
   idProduccionIntelectual: string;
   nombre: string;
   enlaceEditorial: string;
   idTipoPublicacion: number;
+  tipo:string;
   idPais: number;
   pais: string;
   fecha: string;
@@ -17,6 +18,7 @@ interface NewProduccion {
   nombre: string;
   enlaceEditorial: string;
   idTipoPublicacion: number;
+  tipo:string;
   idPais: number;
   pais: string;
   fecha: string;
@@ -31,6 +33,7 @@ const ProduccionesIntelectualesManager: React.FC = () => {
     nombre: '',
     enlaceEditorial: '',
     idTipoPublicacion: 0,
+    tipo: '',
     idPais: 0,
     pais: '',
     fecha: '',
@@ -182,10 +185,11 @@ const ProduccionesIntelectualesManager: React.FC = () => {
 
       {/* Modal para editar */}
       {isModalOpen && editingProduccion && (
-        <div className="modal edit-modal">
-          <div className="modal-content">
+        <div className="modal-prodin modal-prodin--edit">
+          <div className="modal-prodin__content">
             <h3>Editar Producción Intelectual</h3>
             <input
+              className="modal-prodin__input"
               type="text"
               placeholder="Nombre"
               value={editingProduccion.nombre}
@@ -194,6 +198,7 @@ const ProduccionesIntelectualesManager: React.FC = () => {
               }
             />
             <input
+              className="modal-prodin__input"
               type="text"
               placeholder="Enlace Editorial"
               value={editingProduccion.enlaceEditorial}
@@ -201,17 +206,28 @@ const ProduccionesIntelectualesManager: React.FC = () => {
                 setEditingProduccion({ ...editingProduccion, enlaceEditorial: e.target.value })
               }
             />
-            <input
-              type="number"
-              placeholder="Tipo de Publicación"
-              value={editingProduccion.idTipoPublicacion}
-              onChange={(e) =>
-                setEditingProduccion({
-                  ...editingProduccion,
-                  idTipoPublicacion: parseInt(e.target.value),
-                })
-              }
-            />
+            <div>
+        <TipoPublic
+          valueAndId="idTipoPublicacion"
+          selectedId={editingProduccion.idTipoPublicacion}
+          selected={editingProduccion.tipo || ""}
+          selectedTipop={{
+            id: editingProduccion.idTipoPublicacion || 0,
+            name: editingProduccion.tipo || "",
+          }}
+          onTipoChange={(selectedTipop) => {
+            setEditingProduccion((prev) =>
+              prev
+                ? {
+                    ...prev,
+                    idTipoPublicacion: selectedTipop.id,
+                    tipo: selectedTipop.name,
+                  }
+                : null
+            );
+          }}
+        />
+      </div>
             <div>
               <CountrySelect
                 valueAndId="idPais"
@@ -235,24 +251,26 @@ const ProduccionesIntelectualesManager: React.FC = () => {
               />
             </div>
             <input
+              className="modal-prodin__input"
               type="date"
               value={editingProduccion.fecha}
               onChange={(e) =>
                 setEditingProduccion({ ...editingProduccion, fecha: e.target.value })
               }
             />
-            <button onClick={handleEdit}>Guardar Cambios</button>
-            <button onClick={closeModals}>Cerrar</button>
+            <button className="modal-prodin__button" onClick={handleEdit}>Guardar Cambios</button>
+            <button className="modal-prodin__buttonclose" onClick={closeModals}>Cerrar</button>
           </div>
         </div>
       )}
 
       {/* Modal para crear */}
       {isCreateModalOpen && (
-        <div className="modal create-modal">
-          <div className="modal-content">
+        <div className="modal-prodin modal-prodin--create">
+          <div className="modal-prodin__content">
             <h3>Crear Nueva Producción Intelectual</h3>
             <input
+              className="modal-prodin__input"
               type="text"
               placeholder="Nombre"
               value={newProduccion.nombre}
@@ -261,6 +279,7 @@ const ProduccionesIntelectualesManager: React.FC = () => {
               }
             />
             <input
+              className="modal-prodin__input"
               type="text"
               placeholder="Enlace Editorial"
               value={newProduccion.enlaceEditorial}
@@ -268,17 +287,24 @@ const ProduccionesIntelectualesManager: React.FC = () => {
                 setNewProduccion({ ...newProduccion, enlaceEditorial: e.target.value })
               }
             />
-            <input
-              type="number"
-              placeholder="Tipo de Publicación"
-              value={newProduccion.idTipoPublicacion}
-              onChange={(e) =>
-                setNewProduccion({
-                  ...newProduccion,
-                  idTipoPublicacion: parseInt(e.target.value),
-                })
-              }
-            />
+             <div>
+              <TipoPublic
+                valueAndId="idTipoPublicacion"
+                selectedId={newProduccion.idTipoPublicacion}
+                selected={newProduccion.tipo || ""}
+                selectedTipop={{
+                  id: newProduccion.idTipoPublicacion || 0,
+                  name: newProduccion.tipo || "",
+                }}
+                onTipoChange={(selectedTipop) => {
+                  setNewProduccion((prev) => ({
+                    ...prev,
+                    idTipoPublicacion: selectedTipop.id,
+                    tipo: selectedTipop.name,
+                  }));
+                }}
+              />
+            </div>
             <div>
               <CountrySelect
                 valueAndId="idPais"
@@ -298,14 +324,15 @@ const ProduccionesIntelectualesManager: React.FC = () => {
               />
             </div>
             <input
+              className="modal-prodin__input"
               type="date"
               value={newProduccion.fecha}
               onChange={(e) =>
                 setNewProduccion({ ...newProduccion, fecha: e.target.value })
               }
             />
-            <button onClick={handleCreate}>Crear</button>
-            <button onClick={closeModals}>Cerrar</button>
+            <button className="modal-prodin__button" onClick={handleCreate}>Crear</button>
+            <button className="modal-prodin__buttonclose" onClick={closeModals}>Cerrar</button>
           </div>
         </div>
       )}

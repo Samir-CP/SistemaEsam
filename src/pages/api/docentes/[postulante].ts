@@ -51,7 +51,7 @@ export async function GET({ params, request }: APIContext) {
     if (estado && ["postulante", "aprobado", "rechazado"].includes(estado)) {
       estadoCondition = `estado = '${estado}'`;
     }
-    
+    await db.query("SET SESSION group_concat_max_len = 10000;");
     const query = `
 SELECT 
     d.idDocente,
@@ -229,7 +229,7 @@ SELECT
                               '"enlaceEditorial":"', IFNULL(pi.enlaceEditorial, ''), '", ',
                               '"pais":"', IFNULL(pp.nombre, ''), '", ',
                               '"fecha":"', IFNULL(pi.fecha, ''), '", ',
-                              '"tipoPublicacion":"', IFNULL(tp.tipo, ''), '"',
+                              '"tipo":"', IFNULL(tp.tipo, ''), '"',
                             '}'
                         ) SEPARATOR ','
                     ), 
@@ -303,8 +303,8 @@ SELECT
         END,
         '[]'
     ) AS cursos,
-       -- Archivos del docente
-    COALESCE(
+-- Archivos del docente
+  COALESCE(
         CASE
             WHEN COUNT(ad.id_ad) > 0 THEN
                 CONCAT(
@@ -313,7 +313,7 @@ SELECT
                         DISTINCT CONCAT(
                             '{',
                               '"idArchivo":"', IFNULL(ad.id_ad, ''), '", ',
-                               '"fechaSubida":"', IFNULL(ad.createdAt, ''), '", ',
+                              '"fechaSubida":"', IFNULL(ad.createdAt, ''), '", ',
                               '"nombreArchivo":"', IFNULL(ad.nombre_archivo, ''), '", ',
                               '"rutaArchivo":"', IFNULL(ad.ruta_archivo, ''), '", ',
                               '"idTipoArchivo":"', IFNULL(ad.idTipo_archivo, ''), '", ',
@@ -326,7 +326,31 @@ SELECT
             ELSE '[]'
         END,
         '[]'
-    ) AS archivosDocente
+    ) AS archivosdocente,
+  -- Metricas
+COALESCE(
+    CASE
+        WHEN COUNT(me.idMetricas) > 0 THEN
+            CONCAT(
+                '[', 
+                GROUP_CONCAT(
+                    DISTINCT CONCAT(
+                        '{',
+                          '"idMetricas":"', IFNULL(me.idMetricas, ''), '", ',
+                           '"fecha":"', IFNULL(me.fecha, ''), '", ',
+                            '"criterio":"', IFNULL(cre.criterio, ''), '", ',
+                             '"cotejo":"', IFNULL(mce.cotejo, ''), '", ',
+                           '"observaciones":"', IFNULL(me.observaciones, ''), '", ',
+                            '"recomendaciones":"', IFNULL(me.recomendaciones, ''), '"',
+                        '}'
+                    ) SEPARATOR ','
+                ), 
+                ']'
+            )
+        ELSE '[]'
+    END,
+    '[]'
+) AS metricas
 
 FROM 
     docentes d
@@ -357,8 +381,11 @@ FROM
     LEFT JOIN docente_curso dc ON d.idDocente = dc.idDocente
     LEFT JOIN cursos c ON dc.idCurso = c.idCurso
     LEFT JOIN paises p2 ON c.idPais = p2.idPais
-    LEFT JOIN archivos_docentes ad ON d.idDocente = ad.idDocente
+   LEFT JOIN archivos_docentes ad ON d.idDocente = ad.idDocente
     LEFT JOIN tipo_archivo ta ON ad.idTipo_archivo = ta.id_ta
+    LEFT JOIN metricas me ON me.idDocente = d.idDocente
+    LEFT JOIN metricas_criteriosevaluacion mce ON me.idMetricas = mce.idMetrica
+    LEFT JOIN criterios_evaluacion cre ON mce.idCriterio = cre.id_criterio
 WHERE 
     d.idDocente = ? AND ${estadoCondition}
 GROUP BY 
@@ -427,11 +454,16 @@ GROUP BY
       postulanteData.cursos = [];
     }
     try {
-      postulanteData.archivosDocente = JSON.parse(postulanteData.archivosDocente);
+      postulanteData.archivosdocente = JSON.parse(postulanteData.archivosdocente);
     } catch (e) {
-      postulanteData.archivosDocente = [];
+      postulanteData.archivosdocente = [];
     }
-
+    try {
+      postulanteData.metricas = JSON.parse(postulanteData.metricas);
+    } catch (e) {
+      postulanteData.metricas = [];
+    }
+    
     return new Response(JSON.stringify(postulanteData), { status: 200 });
   } catch (error) {
     console.error("Error al obtener el postulante:", error);

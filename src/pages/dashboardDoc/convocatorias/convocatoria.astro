@@ -1,36 +1,6 @@
 ---
 import LayoutDashboard from "../../../layouts/LayoutDashboard.astro";
-
-// Definir la interfaz para la convocatoria
-interface Convocatoria {
-  idConvocatoria: number;
-  titulo: string;
-  perfil: string;
-  link: string;
-  requisitos: string;
-  fechaInicio: string;
-  fechaFinal: string;
-  estado: string;
-}
-
-// Función para formatear la fecha a YYYY-MM-DD
-const formatDate = (dateString: string) => {
-  if (!dateString) return ""; // Si no hay fecha, retornar vacío
-  const date = new Date(dateString);
-  return date.toISOString().split("T")[0]; // Formato YYYY-MM-DD
-};
-
-// Llamar a la API y obtener los datos
-const response = await fetch("http://localhost:4321/api/convocatorias/convocatorias");
-const convocatorias: Convocatoria[] = await response.json();
-
-// Filtrar solo las convocatorias abiertas
-const convocatoriasAbiertas = convocatorias
-  .filter((c) => c.estado === "abierta")
-  .map((c) => ({
-    ...c,
-    fechaInicio: formatDate(c.fechaInicio), // Formatear fecha de inicio
-  }));
+import ConvocatoriasDoc from "../../../components/formdoc/ConvocatoriaDocente"; // Importa el componente de React
 ---
 
 <!DOCTYPE html>
@@ -42,56 +12,8 @@ const convocatoriasAbiertas = convocatorias
 </head>
 <body>
     <LayoutDashboard>
-        <div class="container">
-            <h1>Convocatorias Abiertas</h1>
-            <div class="grid">
-                {convocatoriasAbiertas.map((convocatoria) => (
-                    <div class="card">
-                        <h2>{convocatoria.titulo}</h2>
-                        <p><strong>Fecha de inicio:</strong> {convocatoria.fechaInicio}</p>
-                        <a href={convocatoria.link} class="btn">Abrir</a>
-                    </div>
-                ))}
-            </div>
-        </div>
+        <!-- Usar el componente de React -->
+        <ConvocatoriasDoc client:load />
     </LayoutDashboard>
-
-    <style>
-        .container {
-            padding: 20px;
-            max-width: 1200px; /* Limitar el ancho del contenedor */
-            margin: 0 auto; /* Centrar el contenedor en la página */
-        }
-        .grid {
-            display: flex;
-            flex-direction: column; /* Cambiar a columna para que las tarjetas estén una debajo de la otra */
-            gap: 20px;
-        }
-        .card {
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background: white;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
-            max-width: 800px; /* Limitar el ancho de la tarjeta */
-            width: 100%; /* Asegura que la tarjeta ocupe el ancho disponible */
-            margin: 0 auto; /* Centrar la tarjeta horizontalmente */
-        }
-        h1 {
-            font-size: 24px;
-            margin-bottom: 20px;
-            text-align: center; /* Centrar el título */
-        }
-        .btn {
-            display: inline-block;
-            margin-top: 15px;
-            padding: 12px;
-            background: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-    </style>
 </body>
 </html>

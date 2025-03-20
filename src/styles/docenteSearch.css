@@ -275,3 +275,36 @@ body {
   .option-button:hover {
     background: #f5f5f5;
   }
+  /* Estilos para la paginación */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    gap: 10px; /* Espacio entre los botones y el texto */
+  }
+  
+  .pagination-button {
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 16px; /* Ajusta el tamaño de las flechas */
+  }
+  
+  .pagination-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+  
+  .pagination-button:hover:not(:disabled) {
+    background-color: #0056b3;
+  }
+  
+  .pagination-button.active {
+    background-color: #0056b3; /* Color para la página actual */
+    font-weight: bold;
+  }

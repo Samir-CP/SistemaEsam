@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "../../../styles/crearConvocatoria.css";
-
+import { AreaForm } from "../../ui/AreaForm";
 interface FormularioConvocatoriaProps {
   onClose: () => void;
   convocatoriaToEdit?: any; // Ajusta el tipo según tu estructura de datos
@@ -20,6 +20,10 @@ export const FormularioConvocatoria: React.FC<FormularioConvocatoriaProps> = ({ 
     fechaInicio: formatDate(convocatoriaToEdit?.fechaInicio), // Formatear fecha de inicio
     fechaFinal: formatDate(convocatoriaToEdit?.fechaFinal), // Formatear fecha final
     requisitos: convocatoriaToEdit?.requisitos || "",
+    idAreaInteres: convocatoriaToEdit?.idAreaInteres || "",
+    idSector: convocatoriaToEdit?.idSector || "",
+    imagenPortada: null as File | null,
+    formularioExterno: convocatoriaToEdit?.formularioExterno || "",
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -27,6 +31,14 @@ export const FormularioConvocatoria: React.FC<FormularioConvocatoriaProps> = ({ 
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
+    }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setFormData((prevData) => ({
+      ...prevData,
+      imagenPortada: file,
     }));
   };
 
@@ -44,7 +56,11 @@ export const FormularioConvocatoria: React.FC<FormularioConvocatoriaProps> = ({ 
 
       // Agregar cada campo del formulario al FormData
       Object.keys(formData).forEach((key) => {
-        form.append(key, formData[key as keyof typeof formData]);
+        if (key === "imagenPortada" && formData[key]) {
+          form.append(key, formData[key] as File);
+        } else {
+          form.append(key, formData[key as keyof typeof formData]);
+        }
       });
 
       // Determinar la URL y el método según si es una edición o creación
@@ -142,6 +158,33 @@ export const FormularioConvocatoria: React.FC<FormularioConvocatoriaProps> = ({ 
             onChange={handleInputChange}
           />
         </div>
+      </div>
+      <div className="form-group">
+        <label htmlFor="">Area y Sector</label>
+        <AreaForm
+                      onChange={handleChange}
+                      selectedArea={formData.idAreaInteres}
+                      selectedSector={formData.idSector}
+              />
+      </div>
+      <div className="form-group">
+        <label htmlFor="imagenPortada">Imagen de Portada</label>
+        <input
+          type="file"
+          id="imagenPortada"
+          name="imagenPortada"
+          onChange={handleFileChange}
+        />
+      </div>
+      <div className="form-group">
+        <label htmlFor="formularioExterno">Formulario Externo (opcional)</label>
+        <input
+          type="text"
+          id="formularioExterno"
+          name="formularioExterno"
+          value={formData.formularioExterno}
+          onChange={handleInputChange}
+        />
       </div>
       <button type="submit" className="submit-button mt-4">
         Guardar

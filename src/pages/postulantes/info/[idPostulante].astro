@@ -6,8 +6,8 @@ import { ScheduleMeetingButton } from "../../../components/docentes/agendarReu/S
 import { AprobarRechazarDocente } from "../../../components/docentes/AprobarRechazarDocente";
 import { ReprogramMeetingButton } from "../../../components/docentes/ReprogramMeetingButton";
 import LayoutForm from "../../../layouts/LayoutForm.astro";
+import { MetricasButton } from "../../../components/docentes/evaluacion/MetricasButton";
 import "../../../styles/postulantes.css";
-
 // Obtener el parámetro idDocente desde Astro.params
 const { idPostulante } = Astro.params;
 
@@ -106,7 +106,9 @@ if (!idPostulante) {
         telefono={docenteData.telefono}
         documentoUrl={"https://drive.google.com/uc?export=download&id=1as3qQpyJV1iZv-n95kdBswfqfTFwQmZn"}
       />
+      <MetricasButton client:only="react" docenteId={docenteData.idDocente} />
     </div>
+    
    
   </div>
    ) : (
