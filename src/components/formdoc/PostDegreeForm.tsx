@@ -151,7 +151,7 @@ const PostDegreeForm: React.FC = () => {
               idPais: selectedEstudio.idPais,
               idGrado: selectedEstudio.idGrado,
               idModalidad: selectedEstudio.idModalidad,
-              idTipo: selectedEstudio.idTipo,
+              idTipoEstudio: selectedEstudio.idTipo,
             },
           }),
         });

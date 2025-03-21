@@ -1,9 +1,13 @@
 import { connectToDatabase } from "../../../../utils/dbConect";
 import type { APIContext } from "astro";
+import * as fs from 'fs';
+import * as path from 'path';
 
 const sanitizeValue = (value: any) => (value === undefined ? null : value);
 
 export async function PUT({ request, params }: APIContext) {
+  let db: any;
+
   try {
     // Obtener el ID de la convocatoria desde los parámetros de la ruta
     const { idConvocatoria } = params;
@@ -24,55 +28,83 @@ export async function PUT({ request, params }: APIContext) {
     const fechaInicio = formData.get("fechaInicio") as string;
     const fechaFinal = formData.get("fechaFinal") as string;
     const requisitos = formData.get("requisitos") as string;
-
-    // Validar campos obligatorios
-    if (!titulo || !perfil || !fechaInicio || !fechaFinal || !requisitos) {
-      return new Response(
-        JSON.stringify({ error: "Faltan campos obligatorios" }),
-        { status: 400 }
-      );
-    }
-
-    // Validar formato de las fechas
-    const fechaInicioDate = new Date(fechaInicio);
-    const fechaFinalDate = new Date(fechaFinal);
-    if (isNaN(fechaInicioDate.getTime()) || isNaN(fechaFinalDate.getTime())) {
-      return new Response(
-        JSON.stringify({ error: "Formato de fecha inválido" }),
-        { status: 400 }
-      );
-    }
-
-    // Generar el link basado en el título
-    const link = `http://localhost:4321/convocatorias/${encodeURIComponent(titulo.trim())}`;
+    const idAreaInteres = formData.get("idAreaInteres") as string;
+    const idSector = formData.get("idSector") as string;
+    const formularioExterno = formData.get("formularioExterno") as string;
+    const imagenPortada = formData.get("imagenPortada") as File | null;
 
     // Conectar a la base de datos
-    const db = await connectToDatabase();
+    db = await connectToDatabase();
 
-    // Query para actualizar la convocatoria
-    const convocatoriaQuery = `
-      UPDATE convocatorias
-      SET titulo = ?, perfil = ?, fechaInicio = ?, fechaFinal = ?, requisitos = ?, link = ?
-      WHERE idConvocatoria = ?;
-    `;
+    // Obtener la convocatoria actual para comparar los valores
+    const [currentConvocatoria]: any = await db.execute(
+      "SELECT * FROM convocatorias WHERE idConvocatoria = ?",
+      [idConvocatoria]
+    );
 
-    // Valores para la query
-    const convocatoriaValues = [
-      sanitizeValue(titulo.trim()),
-      sanitizeValue(perfil.trim()),
-      sanitizeValue(fechaInicioDate.toISOString().split("T")[0]),
-      sanitizeValue(fechaFinalDate.toISOString().split("T")[0]),
-      sanitizeValue(requisitos.trim()),
-      link, // Actualizar el campo link
-      sanitizeValue(idConvocatoria), // El id de la convocatoria
-    ];
+    if (currentConvocatoria.length === 0) {
+      return new Response(
+        JSON.stringify({ error: "Convocatoria no encontrada" }),
+        { status: 404 }
+      );
+    }
 
-    // Ejecutar la query
-    const [convocatoriaResult]: any = await db.execute(convocatoriaQuery, convocatoriaValues);
-    console.log("Resultado de actualización de la convocatoria:", convocatoriaResult);
+    const currentData = currentConvocatoria[0];
 
-    // Cerrar la conexión a la base de datos
-    db.end();
+    // Crear un objeto con los nuevos valores, solo si son diferentes a los actuales
+    const updates: { [key: string]: any } = {};
+
+    if (titulo && titulo.trim() !== currentData.titulo) updates.titulo = titulo.trim();
+    if (perfil && perfil.trim() !== currentData.perfil) updates.perfil = perfil.trim();
+    if (fechaInicio && new Date(fechaInicio).toISOString().split("T")[0] !== currentData.fechaInicio) updates.fechaInicio = new Date(fechaInicio).toISOString().split("T")[0];
+    if (fechaFinal && new Date(fechaFinal).toISOString().split("T")[0] !== currentData.fechaFinal) updates.fechaFinal = new Date(fechaFinal).toISOString().split("T")[0];
+    if (requisitos && requisitos.trim() !== currentData.requisitos) updates.requisitos = requisitos.trim();
+    if (idAreaInteres && idAreaInteres !== currentData.idArea) updates.idArea = idAreaInteres;
+    if (idSector && idSector !== currentData.idSector) updates.idSector = idSector;
+    if (formularioExterno && formularioExterno !== currentData.formularioExterno) updates.formularioExterno = formularioExterno;
+
+    // Generar el link basado en el título si este ha cambiado
+    if (updates.titulo) {
+      updates.link = `http://localhost:4321/convocatorias/${encodeURIComponent(updates.titulo)}`;
+    }
+
+    // Procesar la imagen de portada si se proporciona una nueva
+    if (imagenPortada && imagenPortada.size > 0) {
+      const uploadDir = path.join(process.cwd(), 'public', 'images', 'convocatorias');
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+
+      // Eliminar la imagen anterior si existe
+      if (currentData.imagenPortada) {
+        const oldImagePath = path.join(process.cwd(), 'public', currentData.imagenPortada);
+        if (fs.existsSync(oldImagePath)) {
+          fs.unlinkSync(oldImagePath);
+        }
+      }
+
+      // Guardar la nueva imagen
+      const fileName = `${Date.now()}-${imagenPortada.name}`;
+      const filePath = path.join(uploadDir, fileName);
+      const arrayBuffer = await imagenPortada.arrayBuffer();
+      fs.writeFileSync(filePath, Buffer.from(arrayBuffer));
+      updates.imagenPortada = `/images/convocatorias/${fileName}`;
+    }
+
+    // Si hay campos para actualizar, construir y ejecutar la consulta SQL
+    if (Object.keys(updates).length > 0) {
+      const updateFields = Object.keys(updates).map(key => `${key} = ?`).join(", ");
+      const updateValues = Object.values(updates);
+      updateValues.push(idConvocatoria);
+
+      const updateQuery = `
+        UPDATE convocatorias
+        SET ${updateFields}
+        WHERE idConvocatoria = ?;
+      `;
+
+      await db.execute(updateQuery, updateValues);
+    }
 
     // Retornar una respuesta exitosa
     return new Response(
@@ -85,5 +117,7 @@ export async function PUT({ request, params }: APIContext) {
       JSON.stringify({ error: "Error al actualizar convocatoria" }),
       { status: 500 }
     );
+  } finally {
+    if (db) db.end();
   }
 }

@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "../../../styles/crearConvocatoria.css";
 import { AreaForm } from "../../ui/AreaForm";
+
 interface FormularioConvocatoriaProps {
   onClose: () => void;
   convocatoriaToEdit?: any; // Ajusta el tipo según tu estructura de datos
@@ -26,6 +27,15 @@ export const FormularioConvocatoria: React.FC<FormularioConvocatoriaProps> = ({ 
     formularioExterno: convocatoriaToEdit?.formularioExterno || "",
   });
 
+  const [previewImage, setPreviewImage] = useState<string | null>(convocatoriaToEdit?.imagenPortada || null);
+
+  // Cargar la imagen de portada si existe
+  useEffect(() => {
+    if (convocatoriaToEdit?.imagenPortada) {
+      setPreviewImage(convocatoriaToEdit.imagenPortada);
+    }
+  }, [convocatoriaToEdit]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -36,10 +46,29 @@ export const FormularioConvocatoria: React.FC<FormularioConvocatoriaProps> = ({ 
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
-    setFormData((prevData) => ({
-      ...prevData,
-      imagenPortada: file,
-    }));
+    if (file) {
+      setFormData((prevData) => ({
+        ...prevData,
+        imagenPortada: file,
+      }));
+      setPreviewImage(URL.createObjectURL(file)); // Crear una URL para la vista previa
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith("image/")) {
+      setFormData((prevData) => ({
+        ...prevData,
+        imagenPortada: file,
+      }));
+      setPreviewImage(URL.createObjectURL(file)); // Crear una URL para la vista previa
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault(); // Permitir el drop
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -162,19 +191,35 @@ export const FormularioConvocatoria: React.FC<FormularioConvocatoriaProps> = ({ 
       <div className="form-group">
         <label htmlFor="">Area y Sector</label>
         <AreaForm
-                      onChange={handleChange}
-                      selectedArea={formData.idAreaInteres}
-                      selectedSector={formData.idSector}
-              />
+          onChange={handleChange}
+          selectedArea={formData.idAreaInteres}
+          selectedSector={formData.idSector}
+        />
       </div>
       <div className="form-group">
         <label htmlFor="imagenPortada">Imagen de Portada</label>
-        <input
-          type="file"
-          id="imagenPortada"
-          name="imagenPortada"
-          onChange={handleFileChange}
-        />
+        <div
+          className="drag-drop-area"
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+        >
+          <input
+            type="file"
+            id="imagenPortada"
+            name="imagenPortada"
+            onChange={handleFileChange}
+            accept="image/*"
+            style={{ display: "none" }}
+          />
+          <label htmlFor="imagenPortada" className="drag-drop-label">
+            Arrastra una imagen o haz clic para seleccionar
+          </label>
+          {previewImage && (
+            <div className="image-preview">
+              <img src={previewImage} alt="Vista previa de la imagen" />
+            </div>
+          )}
+        </div>
       </div>
       <div className="form-group">
         <label htmlFor="formularioExterno">Formulario Externo (opcional)</label>

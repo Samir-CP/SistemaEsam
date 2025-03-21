@@ -39,7 +39,28 @@
 textarea {
   resize: none;
 }
+/* Estilos para el contenedor de Área y Sector */
+.area-interes {
+  display: flex;
+  gap: 8px; /* Espacio entre los selects */
+  width: 86%; /* Mismo ancho que los otros campos */
+  margin-bottom: 15px; /* Espacio inferior */
+}
 
+/* Estilos para los selects de Área y Sector */
+.area-select {
+  width: 100%; /* Ocupa todo el espacio disponible */
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: border-color 0.3s ease-in-out;
+}
+
+.area-select:focus {
+  border-color: #007bff;
+  outline: none;
+}
 /* Estilos para el botón de enviar */
 .submit-button {
   margin-top: 15px;
@@ -105,4 +126,36 @@ textarea {
 
 .radio-group input[type="radio"]:checked::before {
   transform: translate(-50%, -50%) scale(1);
+}
+/* Estilos para el área de drag and drop */
+.drag-drop-area {
+  border: 2px dashed #ccc;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+  transition: border-color 0.3s ease;
+  width: 77%; 
+}
+
+.drag-drop-area:hover {
+  border-color: #007bff;
+}
+
+.drag-drop-label {
+  color: #666;
+  font-size: 16px;
+}
+
+/* Estilos para la vista previa de la imagen */
+.image-preview {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.image-preview img {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }

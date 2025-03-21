@@ -173,7 +173,7 @@ const ProduccionesIntelectualesManager: React.FC = () => {
                     {produccion!.enlaceEditorial}
                   </a>
                 </p>
-                <p>Tipo de Publicación: {produccion!.idTipoPublicacion}</p>
+                <p>Tipo de Publicación: {produccion!.tipo}</p>
                 <p>País: {produccion!.pais}</p>
                 <p>Fecha: {produccion!.fecha}</p>
                 <button onClick={() => openEditModal(produccion!)}>Editar</button>

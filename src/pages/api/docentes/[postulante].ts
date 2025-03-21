@@ -229,6 +229,7 @@ SELECT
                               '"enlaceEditorial":"', IFNULL(pi.enlaceEditorial, ''), '", ',
                               '"pais":"', IFNULL(pp.nombre, ''), '", ',
                               '"fecha":"', IFNULL(pi.fecha, ''), '", ',
+                              '"idTipoPublicacion":"', IFNULL(tp.idTipoPublicacion, ''), '", ',
                               '"tipo":"', IFNULL(tp.tipo, ''), '"',
                             '}'
                         ) SEPARATOR ','

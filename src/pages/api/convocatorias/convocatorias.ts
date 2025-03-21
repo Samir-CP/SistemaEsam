@@ -17,6 +17,12 @@ export async function GET({ request }: APIContext) {
         c.fechaInicio, 
         c.fechaFinal, 
         c.estado, 
+        c.imagenPortada,
+        c.formularioExterno,
+        a.idArea AS idAreaInteres,
+        a.nombre AS area,
+        s.idSector AS idSector,
+        s.nombre AS sector,
         COALESCE(
           CASE
             WHEN COUNT(d.idDocente) > 0 THEN
@@ -43,6 +49,8 @@ export async function GET({ request }: APIContext) {
       FROM convocatorias c
       LEFT JOIN postulantes_convocatoria pc ON c.idConvocatoria = pc.idConvocatoria
       LEFT JOIN docentes d ON pc.idDocente = d.idDocente
+      LEFT JOIN areas a ON a.idArea = c.idArea
+      LEFT JOIN sectores s ON s.idSector = c.idSector
       WHERE c.estado = "abierta" OR c.estado="cerrada"
       GROUP BY c.idConvocatoria;
     `;
