@@ -1,4 +1,4 @@
-import { connectToDatabase } from "../../utils/dbConect";
+import { connectToDatabase } from "../../../utils/dbConect";
 import type { APIContext } from "astro";
 import fs from "fs";
 import path from "path";

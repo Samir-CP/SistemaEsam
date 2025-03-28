@@ -3,13 +3,13 @@ import "./style/IdiomasManager.css";
 import IdiomasSelect from "../perfil-doc/IdiomasSelect";
 
 interface Idioma {
-  idIdiomaDocente?: string; // Solo necesario para PUT
+  idIdiomaDocente?: string;
   idIdioma: string;
   idioma: string;
-  escritura: number;
-  oral: number;
-  lectura: number;
-  escucha: number;
+  escritura: number | string;  // Acepta ambos tipos
+  oral: number | string;
+  lectura: number | string;
+  escucha: number | string;
 }
 
 interface DocenteData {
@@ -73,7 +73,10 @@ const IdiomasManager: React.FC = () => {
   const handleEditIdiomaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (selectedIdioma) {
       const { name, value } = e.target;
-      setSelectedIdioma({ ...selectedIdioma, [name]: parseInt(value) });
+      setSelectedIdioma({ 
+        ...selectedIdioma, 
+        [name]: parseInt(value) 
+      });
     }
   };
 
@@ -97,10 +100,16 @@ const IdiomasManager: React.FC = () => {
 
   // Abrir modal de editar idioma
   const openEditModal = (idioma: Idioma) => {
-    setSelectedIdioma(idioma);
+    setSelectedIdioma({
+      ...idioma,
+      // Convertir strings a números si es necesario
+      escritura: typeof idioma.escritura === 'string' ? parseInt(idioma.escritura) : idioma.escritura,
+      oral: typeof idioma.oral === 'string' ? parseInt(idioma.oral) : idioma.oral,
+      lectura: typeof idioma.lectura === 'string' ? parseInt(idioma.lectura) : idioma.lectura,
+      escucha: typeof idioma.escucha === 'string' ? parseInt(idioma.escucha) : idioma.escucha
+    });
     setShowEditModal(true);
   };
-
   // Cerrar modal de editar idioma
   const closeEditModal = () => {
     setShowEditModal(false);
@@ -150,8 +159,17 @@ const IdiomasManager: React.FC = () => {
       alert("No se encontró el ID del docente o el idioma seleccionado");
       return;
     }
-
+  
     try {
+      // Convertir todos los valores a números
+      const idiomaParaEnviar = {
+        ...selectedIdioma,
+        escritura: Number(selectedIdioma.escritura),
+        oral: Number(selectedIdioma.oral),
+        lectura: Number(selectedIdioma.lectura),
+        escucha: Number(selectedIdioma.escucha)
+      };
+  
       const response = await fetch("/api/idiomasdoc/idiomasdocput", {
         method: "PUT",
         headers: {
@@ -159,12 +177,12 @@ const IdiomasManager: React.FC = () => {
         },
         body: JSON.stringify({
           idDocente,
-          idiomas: [selectedIdioma],
+          idiomas: [idiomaParaEnviar],
         }),
       });
-
+  
       if (!response.ok) throw new Error("Error al actualizar el idioma");
-
+  
       alert("Idioma actualizado con éxito");
       const updatedData = await response.json();
       setDocenteData(updatedData);
@@ -288,49 +306,47 @@ const IdiomasManager: React.FC = () => {
       {/* Modal de Editar Idioma */}
 
       {showEditModal && selectedIdioma && (
-        <div className="modalidioma-add-overlay">
-          <div className="modalidioma-add">
-            <h2>Editar Idioma</h2>
-            <input
-              type="text"
-              name="idioma"
-              placeholder="Idioma"
-              value={selectedIdioma.idioma}
-              onChange={handleEditIdiomaChange}
-              disabled
-            />
-            {/* Checkboxes para los niveles */}
-            {["escritura", "oral", "lectura", "escucha"].map((field) => (
-              <div key={field} className="modalidioma-add-checkbox-group">
-                <label>{field.charAt(0).toUpperCase() + field.slice(1)}</label>
-                {["Alto", "Medio", "Bajo"].map((level, index) => (
-                  <div key={index}>
-                    <input
-                      type="radio"
-                      name={field}
-                      value={3 - index}
-                      checked={
-                        selectedIdioma[field as keyof Idioma] === 3 - index
-                      }
-                      onChange={handleEditIdiomaChange}
-                    />
-                    <label>{level}</label>
-                  </div>
-                ))}
-              </div>
-            ))}
-            <button className="modalidioma-add-button" onClick={handleUpdateIdioma}>
-              Actualizar
-            </button>
-            <button
-              className="modalidioma-add-button-close"
-              onClick={closeEditModal}
-            >
-              Cerrar
-            </button>
-          </div>
+  <div className="modalidioma-add-overlay">
+    <div className="modalidioma-add">
+      <h2>Editar Idioma</h2>
+      <input
+        type="text"
+        name="idioma"
+        placeholder="Idioma"
+        value={selectedIdioma.idioma}
+        onChange={handleEditIdiomaChange}
+        disabled
+      />
+      {/* Checkboxes para los niveles */}
+      {["escritura", "oral", "lectura", "escucha"].map((field) => (
+        <div key={field} className="modalidioma-add-checkbox-group">
+          <label>{field.charAt(0).toUpperCase() + field.slice(1)}</label>
+          {[3, 2, 1].map((value) => (
+            <div key={value}>
+              <input
+                type="radio"
+                name={field}
+                value={value}
+                checked={Number(selectedIdioma[field as keyof Idioma]) === value}
+                onChange={handleEditIdiomaChange}
+              />
+              <label>{getLevelText(value)}</label>
+            </div>
+          ))}
         </div>
-      )}
+      ))}
+      <button className="modalidioma-add-button" onClick={handleUpdateIdioma}>
+        Actualizar
+      </button>
+      <button
+        className="modalidioma-add-button-close"
+        onClick={closeEditModal}
+      >
+        Cerrar
+      </button>
+    </div>
+  </div>
+)}
     </div>
   );
 };

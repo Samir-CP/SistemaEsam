@@ -8,6 +8,7 @@ interface DecodedToken {
   nombre: string;
   apellidoPaterno: string;
   idRol: string;
+  idArea: number | null; // ← Añade esto
 }
 
 export const HeaderDash: React.FC = () => {
@@ -19,26 +20,35 @@ export const HeaderDash: React.FC = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const idRol = localStorage.getItem("idRol");
+    
+    // Redirigir si no hay token o si el rol no es el correcto
     if (!token || Number(idRol) === 2 || Number(idRol) === 3) {
       window.location.href = "/login";
       return;
     }
 
     try {
-      // Decodificar el token para obtener los datos del usuario
       const decodedToken = jwt_decode<DecodedToken>(token);
-      const { idDocente, nombre, apellidoPaterno, idRol } = decodedToken;
+      const { idDocente, nombre, apellidoPaterno, idRol, idArea } = decodedToken;
 
-      // Almacenar los datos en el localStorage para otros componentes
+      if (idArea === null) {
+        window.location.href = "/login/registro/areas";
+        return; // Importante: Detener la ejecución aquí
+      }
+
+      // Guardar datos en localStorage (opcional, si los necesitas luego)
       localStorage.setItem("idDocente", idDocente);
       localStorage.setItem("docenteNombre", nombre);
       localStorage.setItem("docenteApellidoPaterno", apellidoPaterno);
       localStorage.setItem("idRol", idRol);
+      localStorage.setItem("idArea", String(idArea)); // Guardar idArea
 
+      // Actualizar el estado
       setidDocente(idDocente);
       setDocenteNombre(nombre);
       setDocenteApellidoPaterno(apellidoPaterno);
       setidRol(idRol);
+
     } catch (error) {
       console.error("Error al decodificar el token:", error);
       window.location.href = "/login";
@@ -51,6 +61,7 @@ export const HeaderDash: React.FC = () => {
     localStorage.removeItem("docenteNombre");
     localStorage.removeItem("docenteApellidoPaterno");
     localStorage.removeItem("idRol");
+    localStorage.removeItem("idArea");
     window.location.href = "/login";
   };
 

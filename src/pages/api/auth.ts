@@ -31,7 +31,12 @@ export async function POST({ request }: APIContext) {
     if (!match) {
       throw new Error('Contraseña incorrecta');
     }
+    const [areas]: any = await db.query(
+      'SELECT idArea FROM areas_docentes WHERE idDocente = ? LIMIT 1',
+      [docente.idDocente]
+    );
 
+    const idArea = areas.length > 0 ? areas[0].idArea : null;
     // Generar el JWT con más información
     const token = jwt.sign(
       { 
@@ -40,6 +45,7 @@ export async function POST({ request }: APIContext) {
         nombre: docente.nombres,
         apellidoPaterno:docente.apellidoPaterno,
         idRol:docente.idRol, 
+        idArea:idArea
       },  
       JWT_SECRET,                  
       { expiresIn: '1h' }         

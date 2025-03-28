@@ -1,0 +1,58 @@
+/* Selector de Profesión - Versión mejorada */
+.profesion-select-container {
+    position: relative;
+    width: 190%; /* Para coincidir con el ancho de tus otros inputs */
+    margin-bottom: 15px; /* Espaciado consistente */
+  }
+  
+  .profesion-input {
+    width: 100%;
+    padding: 0.6rem;
+    font-size: 1rem;
+    border: 1px solid #ddd; /* Mismo borde que otros inputs */
+    border-radius: 8px; /* Bordes redondeados igual */
+    background-color: #fff;
+    color: #333;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    box-sizing: border-box;
+  }
+  
+  .profesion-input:focus {
+    border-color: #66b2ff; /* Color celeste al enfocar */
+    box-shadow: 0 0 4px #66b2ff; /* Resaltado suave */
+    outline: none;
+  }
+  
+  .profesion-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 0 0 8px 8px; /* Redondeado solo abajo */
+    z-index: 1000;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Sombra similar al login-box */
+    border-top: none;
+    margin-top: -1px; /* Para que se una visualmente al input */
+  }
+  
+  .profesion-option {
+    padding: 10px;
+    cursor: pointer;
+    color: #333;
+    font-size: 0.95rem;
+    transition: background-color 0.2s;
+  }
+  
+  .profesion-option:hover {
+    background-color: #f0f8ff; /* Celeste muy claro al hover */
+    color: #0b5f9a; /* Color principal al hover */
+  }
+  
+  /* Para el estado activo/seleccionado */
+  .profesion-option:active {
+    background-color: #e1f0ff; /* Celeste un poco más intenso */
+  }

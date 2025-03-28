@@ -3,6 +3,9 @@ import type { APIContext } from "astro";
 import fs from "fs";
 import path from "path";
 import bcrypt from "bcryptjs";
+import jwt from 'jsonwebtoken';
+
+const JWT_SECRET = 'tu_clave_secreta'; // Debe coincidir con el de auth.ts
 
 export async function POST({ request }: APIContext) {
   try {
@@ -16,128 +19,136 @@ export async function POST({ request }: APIContext) {
     const correo = formData.get("correo")?.toString();
     const ciudadRadicacion = formData.get("ciudadRadicacion")?.toString();
     const idPais = formData.get("idPais")?.toString();
+    const idProfesion = formData.get("idProfesion")?.toString();
     const telefono = formData.get("telefono")?.toString();
     const fechaNacimiento = formData.get("fechaNacimiento")?.toString();
-    const idAreaInteres = formData.get("idAreaInteres")?.toString();
-    const idSector = formData.get("idSector")?.toString();
     const imagen = formData.get("fotografia") as File | null;
-    console.log("Imagen recibida en el backend:", imagen);
-
 
     // Validar los campos requeridos
-    if (
-      !usuario ||
-      !password ||
-      !nombres ||
-      !apellidoPaterno ||
-      !correo ||
-      !ciudadRadicacion ||
-      !idPais ||
-      !telefono ||
-      !fechaNacimiento ||
-      !idAreaInteres ||
-      !idSector
-    ) {
+    if (!usuario || !password || !nombres || !apellidoPaterno || !correo || 
+        !ciudadRadicacion || !idPais || !idProfesion || !telefono || !fechaNacimiento) {
       return new Response(
         JSON.stringify({ error: "Faltan campos obligatorios" }),
         { status: 400 }
       );
     }
-     // Validar la contraseña
-     const passwordRegex = /^(?=.*[0-9])(?=.{8,})/; // Mínimo 8 caracteres, al menos un número
-     if (!passwordRegex.test(password)) {
-       return new Response(
-         JSON.stringify({
-           error: "La contraseña debe tener al menos 8 caracteres y contener al menos un número.",
-         }),
-         { status: 400 }
-       );
-     }
-  // Encriptar la contraseña
-  const hashedPassword = await bcrypt.hash(password.trim(), 10); 
-     // Guardar la imagen en el servidor
-     let imagePath = null;
-     if (imagen) {
-          console.log("Nombre del archivo:", imagen.name);
-      console.log("Tipo de archivo:", imagen.type);
-       const uploadDir = path.join(process.cwd(), "public/images/docentes");
-       if (!fs.existsSync(uploadDir)) {
-         fs.mkdirSync(uploadDir, { recursive: true });
-       }
- 
-       const fileName = `${Date.now()}-${imagen.name || "imagen"}`;
-       const filePath = path.join(uploadDir, fileName);
- 
-       try {
-         // Leer la imagen y guardarla en el servidor
-         if (imagen) {
-          const buffer = Buffer.from(await imagen.arrayBuffer());
-          console.log("Buffer de imagen:", buffer);
-        
-          fs.writeFileSync(filePath, buffer);
-          console.log("Ruta donde se guardará la imagen:", filePath);
-        }
-        
- 
-         imagePath = `/images/docentes/${fileName}`;
-       } catch (err) {
-         console.error("Error al guardar la imagen:", err);
-         return new Response(
-           JSON.stringify({ error: "Error al guardar la imagen" }),
-           { status: 500 }
-         );
-       }
-     }
-     
-    // Conectar a la base de datos e insertar los datos
-    const db = await connectToDatabase();
-    const checkUserQuery = `SELECT COUNT(*) AS count FROM docentes WHERE usuario = ?`;
-    const [rows]: any = await db.execute(checkUserQuery, [usuario.trim()]);
-    console.log(rows); // Debug para verificar la estructura de las filas
-    const count = rows[0]?.count || 0;
 
-    if (count > 0) {
-      db.end();
+    // Validar la contraseña
+    const passwordRegex = /^(?=.*[0-9])(?=.{8,})/;
+    if (!passwordRegex.test(password)) {
       return new Response(
-        JSON.stringify({ error: "El usuario que ingreso ya está registrado, elija otra usuario" }),
+        JSON.stringify({
+          error: "La contraseña debe tener al menos 8 caracteres y contener al menos un número.",
+        }),
         { status: 400 }
       );
     }
-    const query = `
-      INSERT INTO docentes (
-        usuario, password, nombres, apellidoPaterno, apellidoMaterno, correo,
-        ciudadRadicacion, idPais, telefono, fechaNacimiento,
-        idAreaInteres, idSector, fotografia, estado
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)
-    `;
-    const values = [
-      usuario.trim(),
-      hashedPassword, // Contraseña encriptada
-      nombres.trim(),
-      apellidoPaterno.trim(),
-      apellidoMaterno?.trim() || null,
-      correo.trim().toLowerCase(),
-      ciudadRadicacion.trim(),
-      Number(idPais),
-      telefono.trim(),
-      fechaNacimiento.trim(),
-      Number(idAreaInteres),
-      Number(idSector),
-      imagePath || null, // Guardar la ruta de la imagen en la base de datos
-      "postulante",
-    ];
 
-    await db.execute(query, values);
+    // Encriptar la contraseña
+    const hashedPassword = await bcrypt.hash(password.trim(), 10); 
+
+    // Guardar la imagen en el servidor
+    let imagePath = null;
+    if (imagen) {
+      const uploadDir = path.join(process.cwd(), "public/images/docentes");
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+
+      const fileName = `${Date.now()}-${imagen.name || "imagen"}`;
+      const filePath = path.join(uploadDir, fileName);
+
+      try {
+        const buffer = Buffer.from(await imagen.arrayBuffer());
+        fs.writeFileSync(filePath, buffer);
+        imagePath = `/images/docentes/${fileName}`;
+      } catch (err) {
+        console.error("Error al guardar la imagen:", err);
+        return new Response(
+          JSON.stringify({ error: "Error al guardar la imagen" }),
+          { status: 500 }
+        );
+      }
+    }
+    
+    // Conectar a la base de datos
+    const db = await connectToDatabase();
+
+    // Verificar si el usuario ya existe
+    const [rows]: any = await db.execute(
+      "SELECT COUNT(*) AS count FROM docentes WHERE usuario = ?",
+      [usuario.trim()]
+    );
+
+    if (rows[0].count > 0) {
+      db.end();
+      return new Response(
+        JSON.stringify({ error: "El usuario ya está registrado" }),
+        { status: 400 }
+      );
+    }
+
+    // Insertar nuevo docente
+    const [result]: any = await db.execute(
+      `INSERT INTO docentes (
+        usuario, password, nombres, apellidoPaterno, apellidoMaterno, correo,
+        ciudadRadicacion, idPais, idProfesion, telefono, fechaNacimiento,
+        fotografia, estado
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)`,
+      [
+        usuario.trim(),
+        hashedPassword,
+        nombres.trim(),
+        apellidoPaterno.trim(),
+        apellidoMaterno?.trim() || null,
+        correo.trim().toLowerCase(),
+        ciudadRadicacion.trim(),
+        Number(idPais),
+        Number(idProfesion),
+        telefono.trim(),
+        fechaNacimiento.trim(),
+        imagePath || null,
+        "postulante",
+      ]
+    );
+
+    const idDocente = result.insertId;
+
+    // Generar token JWT (similar al de auth.ts pero con datos del nuevo registro)
+    const token = jwt.sign(
+      { 
+        idDocente: idDocente,
+        nombre: nombres.trim(),
+        apellidoPaterno: apellidoPaterno.trim(),
+        idRol: 4,
+        idArea:null    
+      },
+      JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
     db.end();
 
     return new Response(
-      JSON.stringify({ message: "Docente insertado correctamente" }),
-      { status: 200 }
+      JSON.stringify({ 
+        message: "Registro exitoso",
+        token: token,
+        idDocente: idDocente,
+        redirectTo: "/dashboardDoc" // Puedes usar esto en el frontend
+      }),
+      { 
+        status: 200,
+        headers: {
+          'Set-Cookie': `token=${token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=3600`
+        }
+      }
     );
+
   } catch (error) {
     console.error("Error:", error);
-    return new Response(JSON.stringify({ error: "Error al insertar datos" }), {
-      status: 500,
-    });
+    return new Response(
+      JSON.stringify({ error: "Error en el servidor" }),
+      { status: 500 }
+    );
   }
 }

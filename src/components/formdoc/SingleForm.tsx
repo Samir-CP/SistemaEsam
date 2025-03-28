@@ -18,8 +18,6 @@ export const SingleForm = () => {
     diaNacimiento: "",
     mesNacimiento: "",
     anioNacimiento: "",
-    idAreaInteres: "",
-    idSector: "",
   });
 
   const [profileImage, setProfileImage] = useState<File | null>(null);
@@ -99,8 +97,6 @@ export const SingleForm = () => {
           diaNacimiento: "",
           mesNacimiento: "",
           anioNacimiento: "",
-          idAreaInteres: "",
-          idSector: "",
         });
         setProfileImage(null);
       } else {
@@ -435,17 +431,7 @@ export const SingleForm = () => {
                       <i className="error-icon"></i>
                     </div>
                   </div>
-                  <div className="form-row row">
-                    <label htmlFor="" className="datePicker-label">
-                      Área de interés de docencia
-                    </label>
-                    <AreaForm
-                      onChange={handleChange}
-                      selectedArea={formData.idAreaInteres}
-                      selectedSector={formData.idSector}
-                    />
-                  </div>
-                  <svg
+                    <svg
                     xmlns="http://www.w3.org/2000/svg"
                     style={{ display: "none" }}
                   >

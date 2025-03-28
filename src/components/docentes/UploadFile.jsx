@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import jwt_decode from "jwt-decode";
 
-export const UploadFile = ({ tipoArchivo }) => {
+export const UploadFile = ({ tipoArchivo, archivoParaEditar, onUploadComplete }) => {
   const [selectedFiles, setSelectedFiles] = useState([]); 
   const [message, setMessage] = useState("");
   const [idDocente, setIdDocente] = useState(null);
@@ -9,7 +9,6 @@ export const UploadFile = ({ tipoArchivo }) => {
   const [tiposArchivo, setTiposArchivo] = useState([]);
   const [selectedTipoArchivoId, setSelectedTipoArchivoId] = useState(null);
 
-  // Decodificar token al montar el componente
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -25,7 +24,6 @@ export const UploadFile = ({ tipoArchivo }) => {
     }
   }, []);
 
-  // Obtener lista de tipos de archivo desde la API
   useEffect(() => {
     const fetchTiposArchivo = async () => {
       try {
@@ -33,8 +31,6 @@ export const UploadFile = ({ tipoArchivo }) => {
         const data = await response.json();
         if (response.ok) {
           setTiposArchivo(data);
-
-          // Encontrar el ID del tipo de archivo basado en la prop
           const tipoEncontrado = data.find(
             (tipo) => tipo.tipo.toLowerCase() === tipoArchivo.toLowerCase()
           );
@@ -74,7 +70,7 @@ export const UploadFile = ({ tipoArchivo }) => {
       setMessage("Algunos archivos superan el tamaño máximo de 2 MB y no se agregarán.");
     }
 
-    setSelectedFiles((prevFiles) => [...prevFiles, ...validFiles]);
+    setSelectedFiles(validFiles); // Reemplazar en lugar de agregar
   };
 
   const handleUpload = async () => {
@@ -93,49 +89,58 @@ export const UploadFile = ({ tipoArchivo }) => {
       return;
     }
 
-    let successCount = 0;
-    let errorCount = 0;
-
-    for (const file of selectedFiles) {
+    try {
       const formData = new FormData();
       formData.append("docente_id", idDocente);
       formData.append("docente_name", docenteNombre);
-      formData.append("archivo", file);
+      formData.append("archivo", selectedFiles[0]); // Solo el primer archivo para edición
       formData.append("idtipo_archivo", selectedTipoArchivoId);
 
-      try {
-        const response = await fetch("/api/insert_archivos", {
-          method: "POST",
-          body: formData,
-        });
-
-        if (response.ok) {
-          successCount++;
-        } else {
-          errorCount++;
-        }
-      } catch (error) {
-        console.error("Error al subir archivo:", error);
-        errorCount++;
+      // Si estamos editando, agregamos el idArchivo
+      if (archivoParaEditar) {
+        formData.append("idArchivo", archivoParaEditar.idArchivo);
       }
-    }
 
-    setMessage(
-      `${successCount} archivo(s) subido(s) con éxito. ${errorCount} archivo(s) no pudieron ser subidos.`
-    );
-    setSelectedFiles([]);
+      const endpoint = archivoParaEditar 
+        ? "/api/archivos/update_archivos" 
+        : "/api/archivos/insert_archivos";
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage(data.message || "Archivo subido con éxito");
+        setSelectedFiles([]);
+        if (onUploadComplete) {
+          onUploadComplete();
+        }
+      } else {
+        setMessage(data.error || "Error al subir el archivo");
+      }
+    } catch (error) {
+      console.error("Error al subir archivo:", error);
+      setMessage("Error al conectar con el servidor");
+    }
   };
 
   return (
     <div style={{ textAlign: "center", padding: "20px", border: "1px solid #ccc", borderRadius: "8px" }}>
-      <h3>Subir {tipoArchivo}</h3>
+      <h3>{archivoParaEditar ? `Editar ${tipoArchivo}` : `Subir ${tipoArchivo}`}</h3>
+      
+      {archivoParaEditar && (
+        <div style={{ marginBottom: "15px" }}>
+          <p>Archivo actual: {archivoParaEditar.nombreArchivo}</p>
+        </div>
+      )}
 
-      {/* Zona para arrastrar y soltar archivos */}
       <div
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleDrop}
         style={{
-        
           border: "2px dashed #ccc",
           padding: "100px",
           marginBottom: "20px",
@@ -151,20 +156,18 @@ export const UploadFile = ({ tipoArchivo }) => {
             ))}
           </ul>
         ) : (
-          <p>Arrastra tus archivos aquí o haz clic para seleccionarlos</p>
+          <p>Arrastra tu nuevo archivo aquí o haz clic para seleccionarlo</p>
         )}
-        <input type="file" onChange={handleFileChange} multiple style={{ display: "none" }} id="file-input" />
+        <input type="file" onChange={handleFileChange} style={{ display: "none" }} id="file-input" />
         <label htmlFor="file-input" style={{ color: "#007BFF", cursor: "pointer", fontSize:"21px" }}>
-          Seleccionar archivos
+          Seleccionar archivo
         </label>
       </div>
 
-      {/* Botón para subir archivos */}
       <button onClick={handleUpload} disabled={!selectedFiles.length}>
-        Subir {tipoArchivo}
+        {archivoParaEditar ? "Actualizar Archivo" : "Subir Archivo"}
       </button>
 
-      {/* Mensaje de error o éxito */}
       {message && <p style={{ color: message.includes("Error") ? "red" : "green" }}>{message}</p>}
     </div>
   );

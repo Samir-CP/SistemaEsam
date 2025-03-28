@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ImageUpload } from "../upload/Uploadimages";
 import { CountriesFormSelect } from "../ui/CountriesFormSelect";
+import { ProfesionFormSelect } from "../docentes/ProfesionFormSelect";
 import { CountryCodeForm } from "../ui/CountryCodeForm";
 import { AreaForm } from "../ui/AreaForm";
 import "./login.css";
@@ -18,8 +19,7 @@ export const RegistroDocente = () => {
     diaNacimiento: "",
     mesNacimiento: "",
     anioNacimiento: "",
-    idAreaInteres: "",
-    idSector: "",
+    idProfesion: "",
   });
 
   const [profileImage, setProfileImage] = useState<File | null>(null);
@@ -57,7 +57,9 @@ export const RegistroDocente = () => {
     e.preventDefault();
     const passwordRegex = /^(?=.*[0-9])(?=.{8,})/; // Mínimo 8 caracteres, al menos un número
     if (!passwordRegex.test(formData.password)) {
-      setMessage("La contraseña debe tener al menos 8 caracteres y contener al menos un número.");
+      setMessage(
+        "La contraseña debe tener al menos 8 caracteres y contener al menos un número."
+      );
       return; // No continuar con el envío del formulario
     }
     const phoneRegex = /^[0-9]+$/; // Solo permite números
@@ -94,7 +96,8 @@ export const RegistroDocente = () => {
 
       const result = await response.json();
       if (response.ok) {
-        setMessage("Postulación enviada correctamente. Ya puede iniciar sesion con su usuario y contraseña");
+        localStorage.setItem("token", result.token);
+
         setFormData({
           usuario: "", // Nuevo campo
           password: "",
@@ -108,10 +111,11 @@ export const RegistroDocente = () => {
           diaNacimiento: "",
           mesNacimiento: "",
           anioNacimiento: "",
-          idAreaInteres: "",
-          idSector: "",
+          idProfesion: "",
         });
         setProfileImage(null);
+        // Redirigir al dashboard
+        window.location.href = result.redirectTo;
       } else {
         setMessage(result.error || "Error al enviar la postulación.");
       }
@@ -121,7 +125,6 @@ export const RegistroDocente = () => {
     }
   };
   const handleLogin = () => {
-   
     window.location.href = "/login";
   };
   return (
@@ -262,6 +265,18 @@ export const RegistroDocente = () => {
               />
             </div>
           </div>
+
+          <div className="form-group input__group">
+            <ProfesionFormSelect
+              valueAndId="idProfesion"
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  [e.target.name]: e.target.value,
+                }))
+              }
+            />
+          </div>
           <input
             type="text"
             name="telefono"
@@ -342,16 +357,6 @@ export const RegistroDocente = () => {
               </select>
             </div>
           </div>
-          <label htmlFor="" className="label-text">
-            Area de interés de docencia
-          </label>
-          <div className="area-interest-container">
-            <AreaForm
-              onChange={handleChange}
-              selectedArea={formData.idAreaInteres}
-              selectedSector={formData.idSector}
-            />
-          </div>
           <input
             type="submit"
             className="register-button"
@@ -361,13 +366,12 @@ export const RegistroDocente = () => {
           />
           {message && <p className="register-error">{message}</p>}
           <p className="register-message">
-          ¿Ya tienes una cuenta?{" "}
-          <span className="register-link" onClick={handleLogin}>
-            Iniciar Sesion
-          </span>
-        </p>
+            ¿Ya tienes una cuenta?{" "}
+            <span className="register-link" onClick={handleLogin}>
+              Iniciar Sesion
+            </span>
+          </p>
         </form>
-        
       </div>
     </div>
   );

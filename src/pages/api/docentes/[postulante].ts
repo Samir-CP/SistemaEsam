@@ -78,6 +78,8 @@ SELECT
 
     -- Tipo de documento
     COALESCE(CONCAT('{ "tipo": "', IFNULL(doc.tipo, ''), '"}'), '{}') AS tipo_documento,
+     -- Profesion
+    COALESCE(CONCAT('{ "profesion": "', IFNULL(pf.nombreProfesion, ''), '"}'), '{}') AS nombre_Profesion,
 
     -- Estudios superiores
     COALESCE(
@@ -355,7 +357,10 @@ COALESCE(
 
 FROM 
     docentes d
-    LEFT JOIN sectores s ON d.idSector = s.idSector
+    LEFT JOIN areas_docentes ard ON d.idDocente = ard.idDocente
+    LEFT JOIN areas ar ON ard.idArea = ar.idArea
+    LEFT JOIN sectores_docentes sd ON d.idDocente = sd.idDocente
+    LEFT JOIN sectores s ON sd.idSector = s.idSector
     LEFT JOIN paises p ON d.idPais = p.idPais
     LEFT JOIN documentos doc ON d.idDocumento = doc.idDocumentos
     LEFT JOIN docentes_estudios de ON d.idDocente = de.idDocente
@@ -378,10 +383,10 @@ FROM
     LEFT JOIN paises pp ON pi.idPais = pp.idPais
     LEFT JOIN tipospublicaciones tp ON pi.idTipoPublicacion = tp.idTipoPublicacion
     LEFT JOIN agendas ag ON d.idDocente = ag.idDocente
-    LEFT JOIN areas ar ON d.idAreaInteres = ar.idArea
     LEFT JOIN docente_curso dc ON d.idDocente = dc.idDocente
     LEFT JOIN cursos c ON dc.idCurso = c.idCurso
     LEFT JOIN paises p2 ON c.idPais = p2.idPais
+    LEFT JOIN profesiones pf ON d.idProfesion = pf.idProfesion
    LEFT JOIN archivos_docentes ad ON d.idDocente = ad.idDocente
     LEFT JOIN tipo_archivo ta ON ad.idTipo_archivo = ta.id_ta
     LEFT JOIN metricas me ON me.idDocente = d.idDocente
