@@ -265,6 +265,7 @@ export const RegistroDocente = () => {
               />
             </div>
           </div>
+         
 
           <div className="form-group input__group">
             <ProfesionFormSelect
